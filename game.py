@@ -49,6 +49,10 @@ class App:
         if pyxel.btn(pyxel.KEY_RIGHT):
             self.ship.move(1,0)
 
+         # Déplacement à gauche
+        if pyxel.btn(pyxel.KEY_LEFT):
+            self.ship.move(-1,0)
+
     def draw(self):
         """
             On affiche les éléments
