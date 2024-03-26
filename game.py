@@ -9,7 +9,7 @@ import time
 #Création des classes
 class Ship:
     def __init__(self,x,y):
-        self.sprit=pygame.image.load("bob4.svg")
+        self.sprit=pygame.image.load("player.png")
         self.x = x
         self.y = y
         self.bullet=0
@@ -38,7 +38,7 @@ class Ship:
 class Bullet:
 
     def __init__(self, ship):
-        self.sprite=pygame.image.load("player.png")
+        self.sprite=pygame.image.load("bob4.svg")
         self.x=ship.x
         self.y=ship.y
         
@@ -101,8 +101,9 @@ background.fill((250, 250, 250))
 screen.blit(background, (0, 0))
 pygame.display.flip()    
     
-appli=App()
-appli.ship.shot()
+appli=App() #Je définie mon application
+appli.ship.shot() #Je shot, pour crée mon missile
+appli.ship.bullet.y=-infoObject.current_h #Je place mon missile en haut de l'ecran pour ne pas le voir en lancant le jeu
 
 
 while True:
