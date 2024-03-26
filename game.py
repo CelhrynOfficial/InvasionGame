@@ -12,6 +12,7 @@ class Ship:
         self.sprit=pygame.image.load("bob4.svg")
         self.x = x
         self.y = y
+        self.bullet=0
 
     def draw(self):
         """
@@ -32,6 +33,7 @@ class Ship:
         self.bullet=Bullet(self)
         self.bullet.draw()
         
+        
 
 class Bullet:
 
@@ -39,13 +41,14 @@ class Bullet:
         self.sprite=pygame.image.load("player.png")
         self.x=ship.x
         self.y=ship.y
+        
 
     def draw(self):
         """
             Affichage du vaisseau
         """
         screen.blit(self.sprite,(self.x,self.y))
-        #pygame.display.flip() 
+        pygame.display.flip()
 
 class App:
     def __init__(self):
@@ -68,19 +71,16 @@ class App:
                 self.ship.move(-1,0)
             if event.key == pygame.K_RIGHT:
                 self.ship.move(1,0)
-            if event.key == pygame.K_DOWN:
-                self.ship.move(0,1)
-            if event.key == pygame.K_UP:
-                self.ship.move(0,-1)
             if event.key == pygame.K_TAB:
-                
                 self.ship.shot()
                 
 
     def draw(self):
         # On affiche le vaisseau
-        #screen.fill((255,255,255))
+        screen.fill((255,255,255))
         self.ship.draw()
+        self.ship.bullet.draw()
+        self.ship.bullet.y-=5
         
 
 
@@ -102,6 +102,8 @@ screen.blit(background, (0, 0))
 pygame.display.flip()    
     
 appli=App()
+appli.ship.shot()
+
 
 while True:
 
@@ -113,4 +115,8 @@ while True:
 
     appli.update()
     appli.draw()
-    #appli.ship.shot()
+    
+
+
+    
+
