@@ -40,6 +40,15 @@ class Ship:
             
         if self.x<0:
             self.x=0
+
+
+#        if self.x>infoObject.current_w-65: #Je crée un mur traversable
+#            self.x= 0
+            
+#       if self.x<0:
+#           self.x=infoObject.current_w-65
+
+
     
     def shot(self):
         
