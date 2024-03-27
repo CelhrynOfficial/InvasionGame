@@ -19,7 +19,7 @@ class Ship:
             Affichage du vaisseau
         """
         screen.blit(self.sprit,(self.x,self.y))
-        pygame.display.flip()       
+               
 
     def move(self, dx, dy):
         """
@@ -27,6 +27,14 @@ class Ship:
         """
         self.x += dx
         self.y += dy
+        print(self.x,self.y)
+        
+        if self.x>infoObject.current_w-65:
+            
+            self.x= infoObject.current_w-65
+            
+        if self.x<0:
+            self.x=0
     
     def shot(self):
         
@@ -48,7 +56,7 @@ class Bullet:
             Affichage du vaisseau
         """
         screen.blit(self.sprite,(self.x,self.y))
-        pygame.display.flip()
+        
 
 class App:
     def __init__(self):
@@ -59,7 +67,7 @@ class App:
 
         #Afficher le vaisseau
         screen.blit(background, (0, 0))
-        self.ship=Ship((infoObject.current_w/2)-20,(infoObject.current_h-(infoObject.current_w/20))-20)
+        self.ship=Ship((infoObject.current_w/2)-20,(infoObject.current_h-(infoObject.current_h/10))-20)
 
 
     def update(self):
@@ -71,6 +79,10 @@ class App:
                 self.ship.move(-1,0)
             if event.key == pygame.K_RIGHT:
                 self.ship.move(1,0)
+            if event.key == pygame.K_UP:
+                self.ship.move(0,-1)
+            if event.key == pygame.K_DOWN:
+                self.ship.move(0,1)
             if event.key == pygame.K_TAB:
                 self.ship.shot()
                 
@@ -81,6 +93,8 @@ class App:
         self.ship.draw()
         self.ship.bullet.draw()
         self.ship.bullet.y-=5
+        pygame.display.flip()
+
         
 
 
@@ -88,7 +102,7 @@ class App:
 # Initialise screen
 pygame.init()
 infoObject = pygame.display.Info()
-screen=pygame.display.set_mode((infoObject.current_w-20, infoObject.current_h-20))
+screen=pygame.display.set_mode((infoObject.current_w, infoObject.current_h-20))
 pygame.display.set_caption('Invaders')
 
 # Fill background
