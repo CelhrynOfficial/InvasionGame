@@ -60,6 +60,13 @@ class Bullet:
         screen.blit(self.sprite,(self.x,self.y)) #Je place mon missile à sa position
             
         
+class enemie:
+    def __init__(self, x, y):
+        self.sprite=pygame.image.load("bob4.svg")
+        self.x=x
+        self.y=y
+    def draw(self):
+        screen.blit(self.sprite,(self.x,self.y)) #Je place mon missile à sa position
 
 class App:
     def __init__(self, speed=1):
