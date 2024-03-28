@@ -41,6 +41,7 @@ class Ship:
     def shot(self):
         bullet = Bullet(self)  # Créez un nouveau laser
         self.bullets.append(bullet)  # Ajoutez le laser à la liste
+        
 
         
 
@@ -57,6 +58,7 @@ class Bullet:
             Affichage du vaisseau
         """
         screen.blit(self.sprite,(self.x,self.y)) #Je place mon missile à sa position
+            
         
 
 class App:
@@ -65,6 +67,8 @@ class App:
         self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
         self.speed = speed
         self.pressed_keys = []  # Liste pour stocker les touches enfoncées
+        self.time=0 #Variables me permettabt de gere l'envoie des laser
+        self.timer=0
 
     def update(self, key_events):
         for event in key_events:
@@ -80,8 +84,13 @@ class App:
             self.ship.move(-1 * self.speed, 0)
         if pygame.K_RIGHT in self.pressed_keys:
             self.ship.move(1 * self.speed, 0)
+
+        
         if pygame.K_SPACE in self.pressed_keys:
-            self.ship.shot()
+            self.timer=time.time()
+            if self.timer-self.time>=0.5: #Cette conditionelle empche de tirer le missile trop vite
+                self.ship.shot()
+                self.time=self.timer
 
         # Mettez à jour la position de tous les lasers
         for bullet in self.ship.bullets:
