@@ -22,4 +22,6 @@ while True:
     #time.sleep(5/10000)
     for event in pygame.event.get():
         print(event.type)
+        print(pygame.key.key_code)
+        print(pygame.key.name)
         if event.type == pygame.QUIT: sys.exit()

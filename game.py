@@ -84,21 +84,17 @@ class App:
         #Parametrage de la vitesse
         self.speed=speed
 
-    def update(self):
+    def update(self, key_events):
+        for event in key_events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    self.ship.move(-1 * self.speed, 0)
+                if event.key == pygame.K_RIGHT:
+                    self.ship.move(1 * self.speed, 0)
+                if event.key == pygame.K_SPACE:
+                    self.ship.shot()
 
-        events = pygame.event.get()
 
-        if event.type == pygame.KEYDOWN: #Cette boucle me permet de se déplacer quand j'appuie sur un bouton du clavier, ou de tirer
-            if event.key == pygame.K_LEFT:
-                self.ship.move(-1*self.speed,0)
-            if event.key == pygame.K_RIGHT:
-                self.ship.move(1*self.speed,0)
-            if event.key == pygame.K_UP:
-                self.ship.move(0,-1*self.speed)
-            if event.key == pygame.K_DOWN:
-                self.ship.move(0,1*self.speed)
-            if event.key == pygame.K_TAB:
-                self.ship.shot()
                 
 
     def draw(self): 
@@ -125,12 +121,22 @@ background = background.convert()
 appli=App(2) #Je définie mon application, avec une valeur de vitesse
 
 
-while True: #Boucle principas du jeu
+key_events = []  # Liste pour stocker les événements clavier
 
-    #time.sleep(5/10000)
-    for event in pygame.event.get(): #Vérification qui me permet de fermer la fenetre
-        if event.type == pygame.QUIT: sys.exit()
-    
-    #A chaque tour dans la boucle je verifie les modification et je les affiches
-    appli.update()
+while True:  # Boucle principale du jeu
+
+    for event in pygame.event.get():  # Récupère tous les événements pygame
+        if event.type == pygame.QUIT:
+            sys.exit()
+        
+        # Stockez les événements clavier
+        if event.type in [pygame.KEYDOWN, pygame.KEYUP]:
+            key_events.append(event)
+
+    # Mettez à jour et dessinez le jeu
+    appli.update(key_events)
     appli.draw()
+    
+    key_events.clear()  # Nettoyez la liste des événements clavier après les avoir traités
+
+
