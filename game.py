@@ -19,40 +19,29 @@ Temps de travail: 3H
 
 #Création des classes
 class Ship:
-    def __init__(self,x,y): #J'initialise mon 'ship'
-        self.sprit=pygame.image.load("player.png") #Son sprite
-        self.x = x #Ses coordonnées
+    def __init__(self, x, y):
+        self.sprite = pygame.image.load("player.png")
+        self.x = x
         self.y = y
-        self.bullet=0 #Je crée un missile vide pour pouvoir le remplire par la suite
+        self.bullets = []  # Liste pour stocker les lasers
 
     def draw(self):
-        
-        screen.blit(self.sprit,(self.x,self.y)) #Je place mon missile à sa position
-               
+        screen.blit(self.sprite, (self.x, self.y))
+        for bullet in self.bullets:  # Dessinez tous les lasers
+            bullet.draw()
 
     def move(self, dx, dy):
-       
-        self.x += dx #Je change la position de mon vaisseau
-        self.y += dy #Le vaisseau ne change pas la valeurs des ordonné mais je crée quand meme la posibilité de le faire
-        
-        if self.x>infoObject.current_w-65: #Je crée deux mur invisble pour empecher le joueur de sortir de l'écran
-            self.x= infoObject.current_w-65
-            
-        if self.x<0:
-            self.x=0
+        self.x += dx
+        self.y += dy
+        if self.x > infoObject.current_w - 65:
+            self.x = infoObject.current_w - 65
+        if self.x < 0:
+            self.x = 0
 
-
-#        if self.x>infoObject.current_w-65: #Je crée un mur traversable
-#            self.x= 0
-            
-#       if self.x<0:
-#           self.x=infoObject.current_w-65
-
-
-    
     def shot(self):
-        
-        self.bullet=Bullet(self) #Je crée le missile 
+        bullet = Bullet(self)  # Créez un nouveau laser
+        self.bullets.append(bullet)  # Ajoutez le laser à la liste
+
         
 
 class Bullet:
@@ -71,39 +60,42 @@ class Bullet:
         
 
 class App:
-    def __init__(self,speed=1): #J'innitialise l'application qui permet de faire tourner le jeu
-        """
-            Initialisation  des éléments
-        """
-        #Afficher le vaisseau
-        screen.blit(background, (0, 0)) #Je crée le background de la fenetre
-        self.ship=Ship((infoObject.current_w/2)-20,(infoObject.current_h-(infoObject.current_h/10))-20) #Je place le vaisseau au milieur de l'écran
-        #Création du missile
-        self.ship.shot() #Je shot, pour crée mon missile
-        self.ship.bullet.y=-infoObject.current_h #Je place mon missile en haut de l'ecran pour ne pas le voir en lancant le jeu
-        #Parametrage de la vitesse
-        self.speed=speed
+    def __init__(self, speed=1):
+        screen.blit(background, (0, 0))
+        self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
+        self.speed = speed
+        self.pressed_keys = []  # Liste pour stocker les touches enfoncées
 
     def update(self, key_events):
         for event in key_events:
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    self.ship.move(-1 * self.speed, 0)
-                if event.key == pygame.K_RIGHT:
-                    self.ship.move(1 * self.speed, 0)
-                if event.key == pygame.K_SPACE:
-                    self.ship.shot()
+                if event.key not in self.pressed_keys:  # Ajoutez la touche à la liste si elle n'y est pas déjà
+                    self.pressed_keys.append(event.key)
+            elif event.type == pygame.KEYUP:
+                if event.key in self.pressed_keys:  # Supprimez la touche de la liste si elle y est
+                    self.pressed_keys.remove(event.key)
 
+        # Déplacez le vaisseau
+        if pygame.K_LEFT in self.pressed_keys:
+            self.ship.move(-1 * self.speed, 0)
+        if pygame.K_RIGHT in self.pressed_keys:
+            self.ship.move(1 * self.speed, 0)
+        if pygame.K_SPACE in self.pressed_keys:
+            self.ship.shot()
 
-                
+        # Mettez à jour la position de tous les lasers
+        for bullet in self.ship.bullets:
+            bullet.y -= 3 * self.speed
 
-    def draw(self): 
-        
-        screen.fill((255,255,255))#J'efface l'écran précedant
-        self.ship.draw() #Je draw le vaisseau à sa nouvelle position
-        self.ship.bullet.draw() #De meme pour le missile
-        self.ship.bullet.y-=3*self.speed #Je fais bouger mon missile de 5 vers le haut
-        pygame.display.flip() #J'affiche tous les sprites
+        # Supprimez les lasers qui ont quitté l'écran
+        self.ship.bullets = [bullet for bullet in self.ship.bullets if bullet.y > -bullet.sprite.get_height()]
+
+    def draw(self):
+        screen.fill((255, 255, 255))  # J'efface l'écran précédent
+        self.ship.draw()  # Je draw le vaisseau à sa nouvelle position
+        for bullet in self.ship.bullets:  # Dessinez tous les lasers
+            bullet.draw()
+        pygame.display.flip()  # J'affiche tous les sprites
 
         
 
