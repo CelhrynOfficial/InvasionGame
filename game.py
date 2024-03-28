@@ -95,7 +95,7 @@ class App:
         
         if pygame.K_SPACE in self.pressed_keys:
             self.timer=time.time()
-            if self.timer-self.time>=0.5: #Cette conditionelle empche de tirer le missile trop vite
+            if self.timer-self.time>=0.1: #Cette conditionelle empche de tirer le missile trop vite
                 self.ship.shot()
                 self.time=self.timer
 
