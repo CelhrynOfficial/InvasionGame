@@ -1,19 +1,7 @@
-"""Exemple d'affichage d'une fenêtre simple."""
 import pygame
 from pygame.locals import *
 import sys
 import time
-
-
-"""
-
-Cette version du jeu culte "Space invaders" est un projet scolaire de l'année 2023-2024
-Nous sommes une équipes de trois eleves de Terminal NSI
-Si vous souhaiter travailler dessus, veillez ne pas effacer ce message et actualiser le temps de travaille
-
-Temps de travail: 3H
-
-"""
 
 # Définition des couleurs
 WHITE = (255, 255, 255)
@@ -26,61 +14,50 @@ screen = pygame.display.set_mode((BASE_WIDTH, BASE_HEIGHT), RESIZABLE)
 
 infoObject = pygame.display.Info()  # Définir infoObject ici
 
-
-#Création des classes
 class Ship:
     def __init__(self, x, y):
-        self.sprite = pygame.image.load("je.svg")
-        self.x = x
-        self.y = y
-        self.bullets = []  # Liste pour stocker les lasers
+        self.sprite = pygame.image.load("player.png")
+        self.rect= self.sprite.get_rect(x=x, y=y)
+        self.speed=5
+        self.velocity=[0,0]
+        self.bullets=[]
+
+    def move(self):
+        self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
 
     def draw(self):
-        screen.blit(self.sprite, (self.x, self.y))
-        for bullet in self.bullets:  # Dessinez tous les lasers
-            bullet.draw()
-
-    def move(self, dx, dy):
-        infoObject = pygame.display.Info()
-        self.x += dx
-        self.y = (infoObject.current_h - (infoObject.current_h)/20)-65
-        if self.x > infoObject.current_w - 65:
-            self.x = 0
-        if self.x < 0:
-            self.x = infoObject.current_w - 65
+        screen.blit(self.sprite, self.rect)
 
     def shot(self):
-        bullet = Bullet(self)  # Créez un nouveau laser
+        x=self.rect.x
+        y=self.rect.y
+        bullet = Bullet(self,x, y)  # Créez un nouveau laser
         self.bullets.append(bullet)  # Ajoutez le laser à la liste
-        
-
-        
 
 class Bullet:
-
-    def __init__(self, ship): #J'initialise mon 'Bullet'
+    def __init__(self, ship, x, y): #J'initialise mon 'Bullet'
         self.sprite=pygame.image.load("player.png") #Son sprite
-        self.x=ship.x #Ses coordonées
-        self.y=ship.y
-        self.hit=self.sprite.get_rect()
-        
+        self.rect= self.sprite.get_rect(x=x, y=y)
+        self.speed=5
+        self.velocity=[0,0]
+
+    def move(self):
+        self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
 
     def draw(self):
         """
-            Affichage du vaisseau
+            Affichage du missile
         """
-        screen.blit(self.sprite,(self.x,self.y)) #Je place mon missile à sa position
+        screen.blit(self.sprite, self.rect)
             
-        
+
 class enemie:
     def __init__(self, x, y):
         self.sprite=pygame.image.load("player.png")
-        self.x=x
-        self.y=y
-        self.hit=self.sprite.get_rect()
-    def draw(self):
-        screen.blit(self.sprite,(self.x,self.y)) #Je place mon missile à sa position
+        self.rect=self.sprite.get_rect(x=x, y=y)
 
+    def draw(self):
+        screen.blit(self.sprite, self.rect) #Je place mon missile à sa position
 
 class band:
     def __init__(self):
@@ -92,13 +69,15 @@ class band:
 
 class App:
     def __init__(self, speed=1):
-        screen.blit(background, (0, 0))
-        self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
-        self.speed = speed
-        self.pressed_keys = []  # Liste pour stocker les touches enfoncées
-        self.time=0 #Variables me permettant de gere l'envoie des laser
-        self.timer=0
-        self.groupe=band()
+            screen.blit(background, (0, 0))
+            self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
+            self.speed = speed
+            self.ship.speed=self.speed
+            self.pressed_keys = []  # Liste pour stocker les touches enfoncées
+            self.time=0 #Variables me permettant de gere l'envoie des laser
+            self.timer=0
+            self.groupe=band()
+            self.ship.shot()
 
         
         
@@ -114,9 +93,12 @@ class App:
 
         # Déplacez le vaisseau
         if pygame.K_LEFT in self.pressed_keys:
-            self.ship.move(-1 * self.speed, 0)
-        if pygame.K_RIGHT in self.pressed_keys:
-            self.ship.move(1 * self.speed, 0)
+            self.ship.velocity[0]=-1
+        elif pygame.K_RIGHT in self.pressed_keys:
+            self.ship.velocity[0]=1
+        else:
+            self.ship.velocity[0]=0
+        self.ship.move()
 
         
         if pygame.K_SPACE in self.pressed_keys:
@@ -124,32 +106,39 @@ class App:
             if self.timer-self.time>=0.7: #Cette conditionelle empche de tirer le missile trop vite
                 self.ship.shot()
                 self.time=self.timer
-
+        
+                
         # Mettez à jour la position de tous les lasers
         for bullet in self.ship.bullets:
-            bullet.y -= 3 * self.speed
+            bullet.velocity[1] = -1*self.speed
+            bullet.move()
+        
 
         # Supprimez les lasers qui ont quitté l'écran
-        self.ship.bullets = [bullet for bullet in self.ship.bullets if bullet.y > -bullet.sprite.get_height()]
+        self.ship.bullets = [bullet for bullet in self.ship.bullets if bullet.rect.y > -bullet.sprite.get_height()]
 
         #Maintenir le vaisseau en bas de l'écran
         infoObject = pygame.display.Info()
-        self.ship.y= (infoObject.current_h - (infoObject.current_h)/20)-65
+        self.ship.rect.y= (infoObject.current_h - (infoObject.current_h)/20)-65
 
+        #Verifier les colision
+        for bullets in self.ship.bullets:
+            for mob in self.groupe.band:
+                if  bullets.colliderect(mob)==1:
+                    print(1)
+                else:
+                    print(0)
         
 
     def draw(self):
         screen.fill((255, 255, 255))  # J'efface l'écran précédent
         self.ship.draw()  # Je draw le vaisseau à sa nouvelle position
         for enemie in self.groupe.band:
-            #print(self.groupe.band)
-            i=1
             enemie.draw()
+            
         for bullet in self.ship.bullets:  # Dessinez tous les lasers
             bullet.draw()
         pygame.display.flip()  # J'affiche tous les sprites
-
-        
 
 
 pygame.init() #Je crée l'interface pygame
@@ -162,7 +151,7 @@ background = pygame.Surface(screen.get_size()) #Je crée mon fond d'écran
 background = background.convert()
 #background.fill((250, 250, 250)) #Je nettoie l'écran   
     
-appli=App(2) #Je définie mon application, avec une valeur de vitesse
+appli=App(1) #Je définie mon application, avec une valeur de vitesse
 
 
 key_events = []  # Liste pour stocker les événements clavier
@@ -185,3 +174,4 @@ while True:  # Boucle principale du jeu
     
     
     key_events.clear()  # Nettoyez la liste des événements clavier après les avoir traités
+    
