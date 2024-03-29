@@ -30,7 +30,7 @@ infoObject = pygame.display.Info()  # Définir infoObject ici
 #Création des classes
 class Ship:
     def __init__(self, x, y):
-        self.sprite = pygame.image.load("jell.svg")
+        self.sprite = pygame.image.load("bob4.svg")
         self.x = x
         self.y = y
         self.bullets = []  # Liste pour stocker les lasers
@@ -59,7 +59,7 @@ class Ship:
 class Bullet:
 
     def __init__(self, ship): #J'initialise mon 'Bullet'
-        self.sprite=pygame.image.load("player.png") #Son sprite
+        self.sprite=pygame.image.load("bull.svg") #Son sprite
         self.x=ship.x #Ses coordonées
         self.y=ship.y
         
@@ -73,20 +73,11 @@ class Bullet:
         
 class enemie:
     def __init__(self, x, y):
-        self.sprite=pygame.image.load("jell.svg")
+        self.sprite=pygame.image.load("bob4.svg")
         self.x=x
         self.y=y
     def draw(self):
         screen.blit(self.sprite,(self.x,self.y)) #Je place mon missile à sa position
-
-
-class band:
-    def __init__(self):
-        self.band=[]
-        for i in range(12):
-            for j in range(2):
-                enemies=enemie(i*64, j*100)
-                self.band.append(enemies)
 
 class App:
     def __init__(self, speed=1):
@@ -96,7 +87,6 @@ class App:
         self.pressed_keys = []  # Liste pour stocker les touches enfoncées
         self.time=0 #Variables me permettant de gere l'envoie des laser
         self.timer=0
-        self.groupe=band()
         
 
     def update(self, key_events):
@@ -117,7 +107,7 @@ class App:
         
         if pygame.K_SPACE in self.pressed_keys:
             self.timer=time.time()
-            if self.timer-self.time>=0.7: #Cette conditionelle empche de tirer le missile trop vite
+            if self.timer-self.time>=0.5: #Cette conditionelle empche de tirer le missile trop vite
                 self.ship.shot()
                 self.time=self.timer
 
@@ -135,9 +125,6 @@ class App:
     def draw(self):
         screen.fill((255, 255, 255))  # J'efface l'écran précédent
         self.ship.draw()  # Je draw le vaisseau à sa nouvelle position
-        for enemie in self.groupe.band:
-            #print(self.groupe.band)
-            enemie.draw()
         for bullet in self.ship.bullets:  # Dessinez tous les lasers
             bullet.draw()
         pygame.display.flip()  # J'affiche tous les sprites
@@ -155,7 +142,7 @@ background = pygame.Surface(screen.get_size()) #Je crée mon fond d'écran
 background = background.convert()
 #background.fill((250, 250, 250)) #Je nettoie l'écran   
     
-appli=App(50) #Je définie mon application, avec une valeur de vitesse
+appli=App(1) #Je définie mon application, avec une valeur de vitesse
 
 
 key_events = []  # Liste pour stocker les événements clavier
