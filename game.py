@@ -83,9 +83,9 @@ class enemie:
 class band:
     def __init__(self):
         self.band=[]
-        for i in range(12):
+        for i in range(11):
             for j in range(3):
-                enemies=enemie(i*64, j*100)
+                enemies=enemie((i+0.6)*64, (j*100)+10)
                 self.band.append(enemies)
 
 class App:
