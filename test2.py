@@ -31,9 +31,10 @@ class Ship:
         for bullet in self.bullets:  # Dessinez tous les lasers
             bullet.draw()
 
-    def move(self, dx, dy):
+    def move(self, dx):
+        infoObject = pygame.display.Info()
         self.x += dx
-        self.y += dy
+        self.y = (infoObject.current_h - (infoObject.current_h)/20)-65
         if self.x > infoObject.current_w - 65:
             self.x = infoObject.current_w - 65
         if self.x < 0:
@@ -60,7 +61,7 @@ class Bullet:
 class App:
     def __init__(self, speed=1):
         screen.blit(background, (0, 0))
-        self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
+        self.ship = Ship((infoObject.current_w / 2) , (infoObject.current_h - (infoObject.current_h / 20)-65))
         self.speed = speed
         self.pressed_keys = []  # Liste pour stocker les touches enfoncées
 
@@ -75,9 +76,9 @@ class App:
 
         # Déplacez le vaisseau
         if pygame.K_LEFT in self.pressed_keys:
-            self.ship.move(-1 * self.speed, 0)
+            self.ship.move(-1 * self.speed)
         if pygame.K_RIGHT in self.pressed_keys:
-            self.ship.move(1 * self.speed, 0)
+            self.ship.move(1 * self.speed)
         if pygame.K_SPACE in self.pressed_keys:
             self.ship.shot()
 

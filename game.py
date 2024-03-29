@@ -15,12 +15,22 @@ Temps de travail: 3H
 
 """
 
+# Définition des couleurs
+WHITE = (255, 255, 255)
+
+# Taille initiale de la fenêtre
+BASE_WIDTH, BASE_HEIGHT = 800, 600
+
+screen = pygame.display.set_mode((BASE_WIDTH, BASE_HEIGHT), RESIZABLE)
+
+
+infoObject = pygame.display.Info()  # Définir infoObject ici
 
 
 #Création des classes
 class Ship:
     def __init__(self, x, y):
-        self.sprite = pygame.image.load("player.png")
+        self.sprite = pygame.image.load("bob4.svg")
         self.x = x
         self.y = y
         self.bullets = []  # Liste pour stocker les lasers
@@ -31,12 +41,13 @@ class Ship:
             bullet.draw()
 
     def move(self, dx, dy):
+        infoObject = pygame.display.Info()
         self.x += dx
-        self.y += dy
+        self.y = (infoObject.current_h - (infoObject.current_h)/20)-65
         if self.x > infoObject.current_w - 65:
-            self.x = infoObject.current_w - 65
-        if self.x < 0:
             self.x = 0
+        if self.x < 0:
+            self.x = infoObject.current_w - 65
 
     def shot(self):
         bullet = Bullet(self)  # Créez un nouveau laser
@@ -48,7 +59,7 @@ class Ship:
 class Bullet:
 
     def __init__(self, ship): #J'initialise mon 'Bullet'
-        self.sprite=pygame.image.load("bob4.svg") #Son sprite
+        self.sprite=pygame.image.load("bull.svg") #Son sprite
         self.x=ship.x #Ses coordonées
         self.y=ship.y
         
@@ -107,6 +118,10 @@ class App:
         # Supprimez les lasers qui ont quitté l'écran
         self.ship.bullets = [bullet for bullet in self.ship.bullets if bullet.y > -bullet.sprite.get_height()]
 
+        #Maintenir le vaisseau en bas de l'écran
+        infoObject = pygame.display.Info()
+        self.ship.y= (infoObject.current_h - (infoObject.current_h)/20)-65
+
     def draw(self):
         screen.fill((255, 255, 255))  # J'efface l'écran précédent
         self.ship.draw()  # Je draw le vaisseau à sa nouvelle position
@@ -119,7 +134,7 @@ class App:
 
 pygame.init() #Je crée l'interface pygame
 infoObject = pygame.display.Info() #Je récupere les infos de l'ecran pour adapter la taille de la fenetre
-screen=pygame.display.set_mode((infoObject.current_w, infoObject.current_h-20))#Je crée la fenetre en fonction de la taille de l'écran
+#screen=pygame.display.set_mode((infoObject.current_w, infoObject.current_h-20))#Je crée la fenetre en fonction de la taille de l'écran
 pygame.display.set_caption('Invaders') #Je choisi le nom de ma fenetre
 
 
@@ -127,7 +142,7 @@ background = pygame.Surface(screen.get_size()) #Je crée mon fond d'écran
 background = background.convert()
 #background.fill((250, 250, 250)) #Je nettoie l'écran   
     
-appli=App(2) #Je définie mon application, avec une valeur de vitesse
+appli=App(1) #Je définie mon application, avec une valeur de vitesse
 
 
 key_events = []  # Liste pour stocker les événements clavier
@@ -145,6 +160,8 @@ while True:  # Boucle principale du jeu
     # Mettez à jour et dessinez le jeu
     appli.update(key_events)
     appli.draw()
+
+    
     
     key_events.clear()  # Nettoyez la liste des événements clavier après les avoir traités
 
