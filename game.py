@@ -74,8 +74,9 @@ class App:
         self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
         self.speed = speed
         self.pressed_keys = []  # Liste pour stocker les touches enfoncées
-        self.time=0 #Variables me permettabt de gere l'envoie des laser
+        self.time=0 #Variables me permettant de gere l'envoie des laser
         self.timer=0
+        
 
     def update(self, key_events):
         for event in key_events:
@@ -95,7 +96,7 @@ class App:
         
         if pygame.K_SPACE in self.pressed_keys:
             self.timer=time.time()
-            if self.timer-self.time>=0.1: #Cette conditionelle empche de tirer le missile trop vite
+            if self.timer-self.time>=0.5: #Cette conditionelle empche de tirer le missile trop vite
                 self.ship.shot()
                 self.time=self.timer
 
