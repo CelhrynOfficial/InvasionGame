@@ -30,7 +30,7 @@ infoObject = pygame.display.Info()  # Définir infoObject ici
 #Création des classes
 class Ship:
     def __init__(self, x, y):
-        self.sprite = pygame.image.load("jell.svg")
+        self.sprite = pygame.image.load("je.svg")
         self.x = x
         self.y = y
         self.bullets = []  # Liste pour stocker les lasers
@@ -73,7 +73,7 @@ class Bullet:
         
 class enemie:
     def __init__(self, x, y):
-        self.sprite=pygame.image.load("jell.svg")
+        self.sprite=pygame.image.load("player.png")
         self.x=x
         self.y=y
     def draw(self):
@@ -84,7 +84,7 @@ class band:
     def __init__(self):
         self.band=[]
         for i in range(12):
-            for j in range(2):
+            for j in range(3):
                 enemies=enemie(i*64, j*100)
                 self.band.append(enemies)
 
@@ -137,6 +137,7 @@ class App:
         self.ship.draw()  # Je draw le vaisseau à sa nouvelle position
         for enemie in self.groupe.band:
             #print(self.groupe.band)
+            i=1
             enemie.draw()
         for bullet in self.ship.bullets:  # Dessinez tous les lasers
             bullet.draw()
@@ -155,7 +156,7 @@ background = pygame.Surface(screen.get_size()) #Je crée mon fond d'écran
 background = background.convert()
 #background.fill((250, 250, 250)) #Je nettoie l'écran   
     
-appli=App(50) #Je définie mon application, avec une valeur de vitesse
+appli=App(2) #Je définie mon application, avec une valeur de vitesse
 
 
 key_events = []  # Liste pour stocker les événements clavier
