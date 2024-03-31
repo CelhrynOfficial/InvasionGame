@@ -107,12 +107,21 @@ class App:
             self.ship.velocity[0]=1
         else:
             self.ship.velocity[0]=0
+
+        infoObject = pygame.display.Info()
+        w=infoObject.current_w #Cette variable me permet de faire faire des toures d'écrans aux enemis
+
+        if self.ship.rect.x== w:
+            self.ship.rect.x=0
+        elif self.ship.rect.x==0:
+            self.ship.rect.x=w
+
         self.ship.move()
 
         #Faire tirer le vaisseau
         if pygame.K_SPACE in self.pressed_keys:
             self.timerl=time.time()
-            if self.timerl-self.timel>=0.7: #Cette conditionelle empche de tirer le missile trop vite
+            if self.timerl-self.timel>=0.5: #Cette conditionelle empche de tirer le missile trop vite
                 self.ship.shot()
                 self.timel=self.timerl
         
@@ -135,7 +144,7 @@ class App:
                 self.anc=enemie.velocity[0] #Je mémorise leurs vélocité
                 for enemie in self.groupe.band:
                     enemie.velocity[0] = 0
-                    enemie.velocity[1] = 100*enemie.speed
+                    enemie.velocity[1] = 10*enemie.speed
                     self.groupe.touch=0
 
             if enemie.rect.left < 0 or enemie.rect.right >w : #Quand un mob touche un bors il change de diréctions et mémorise qu'il à touché le bord
@@ -185,7 +194,7 @@ background = pygame.Surface(screen.get_size()) #Je crée mon fond d'écran
 background = background.convert()
 #background.fill((250, 250, 250)) #Je nettoie l'écran   
     
-appli=App(2) #Je définie mon application, avec une valeur de vitesse
+appli=App(1) #Je définie mon application, avec une valeur de vitesse
 
 
 key_events = []  # Liste pour stocker les événements clavier
