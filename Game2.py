@@ -57,7 +57,7 @@ class enemie:
         self.rect=self.sprite.get_rect(x=x, y=y)
         self.speed=1
         self.velocity=[1,0]
-        self.touch=0
+        
     
     def move(self):
         self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
@@ -68,6 +68,7 @@ class enemie:
 class band:
     def __init__(self):
         self.band=[]
+        self.touch=0
         for i in range(8):
             for j in range(3):
                 enemies=enemie((i+0.3)*64*1.5, (j*100)+20)
@@ -76,13 +77,14 @@ class band:
 class App:
     def __init__(self, speed=1):
             screen.blit(background, (0, 0))
+            
             self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
             self.speed = speed
             self.ship.speed=self.speed
             self.pressed_keys = []  # Liste pour stocker les touches enfoncées
             self.timel=0 #Variables me permettant de gere l'envoie des laser
             self.timerl=0
-            self.anc=1
+            self.anc=0
             self.groupe=band()
         
 
@@ -125,26 +127,29 @@ class App:
         for enemie in self.groupe.band:
             
             infoObject = pygame.display.Info()
-            w=infoObject.current_w
+            w=infoObject.current_w #Cette variable me permet de faire faire des toures d'écrans aux enemis
             
             
           
-            if enemie.touch==4:
-                self.anc=enemie.velocity[0]
+            if self.groupe.touch==len(self.groupe.band)*2: #Quand chaque mob à touché le bord deux fois, je les fais descendre
+                self.anc=enemie.velocity[0] #Je mémorise leurs vélocité
                 for enemie in self.groupe.band:
                     enemie.velocity[0] = 0
-                    enemie.velocity[1] = 1*enemie.speed
-                    enemie.touch=0
+                    enemie.velocity[1] = 100*enemie.speed
+                    self.groupe.touch=0
 
-            if enemie.rect.left < 0 or enemie.rect.right >w :
+            if enemie.rect.left < 0 or enemie.rect.right >w : #Quand un mob touche un bors il change de diréctions et mémorise qu'il à touché le bord
                 enemie.velocity[0] = -enemie.velocity[0]*enemie.speed
                 self.anc=enemie.velocity[0]
-                enemie.touch+=1
+                self.groupe.touch+=1
 
 
-            enemie.move()
-            enemie.velocity[0]= self.anc
+            enemie.move() #Je fais bouger le mob
+            if enemie.velocity[0]==0: #Si les mobs sont descendu, je repasse leurs velocité à leurs valeurs avant les descentes
+                enemie.velocity[0]= self.anc
             enemie.velocity[1]=0
+
+            
         
         # Supprimez les lasers qui ont quitté l'écran
         self.ship.bullets = [bullet for bullet in self.ship.bullets if bullet.rect.y > -bullet.sprite.get_height()]
@@ -185,7 +190,9 @@ appli=App(2) #Je définie mon application, avec une valeur de vitesse
 
 key_events = []  # Liste pour stocker les événements clavier
 
-while True:  # Boucle principale du jeu
+game=True
+
+while game==True:  # Boucle principale du jeu
 
     for event in pygame.event.get():  # Récupère tous les événements pygame
         if event.type == pygame.QUIT:
@@ -198,6 +205,10 @@ while True:  # Boucle principale du jeu
     # Mettez à jour et dessinez le jeu
     appli.update(key_events)
     appli.draw()
+
+    for enemis in appli.groupe.band: #Si un enemies dépasse mon vaisseau, on arrete le jeu, le joueur à perdu
+        if enemis.rect.y>= appli.ship.rect.y:
+            game=False
     
 
     
