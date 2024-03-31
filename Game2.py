@@ -109,7 +109,7 @@ class App:
             self.ship.velocity[0]=0
 
         infoObject = pygame.display.Info()
-        w=infoObject.current_w #Cette variable me permet de faire faire des toures d'écrans aux enemis
+        w=infoObject.current_w #Cette variable me permet de faire un écran traversable par les bords
 
         if self.ship.rect.x== w:
             self.ship.rect.x=0
