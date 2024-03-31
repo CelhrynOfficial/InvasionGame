@@ -57,6 +57,7 @@ class enemie:
         self.rect=self.sprite.get_rect(x=x, y=y)
         self.speed=1
         self.velocity=[1,0]
+        self.touch=0
     
     def move(self):
         self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
@@ -81,10 +82,9 @@ class App:
             self.pressed_keys = []  # Liste pour stocker les touches enfoncées
             self.timel=0 #Variables me permettant de gere l'envoie des laser
             self.timerl=0
-            self.timem=0
-            self.timerm=0
+            self.anc=1
             self.groupe=band()
-            #self.ship.shot()
+        
 
         
         
@@ -127,11 +127,24 @@ class App:
             infoObject = pygame.display.Info()
             w=infoObject.current_w
             
-        
+            
+          
+            if enemie.touch==4:
+                self.anc=enemie.velocity[0]
+                for enemie in self.groupe.band:
+                    enemie.velocity[0] = 0
+                    enemie.velocity[1] = 1*enemie.speed
+                    enemie.touch=0
+
             if enemie.rect.left < 0 or enemie.rect.right >w :
                 enemie.velocity[0] = -enemie.velocity[0]*enemie.speed
-             
+                self.anc=enemie.velocity[0]
+                enemie.touch+=1
+
+
             enemie.move()
+            enemie.velocity[0]= self.anc
+            enemie.velocity[1]=0
         
         # Supprimez les lasers qui ont quitté l'écran
         self.ship.bullets = [bullet for bullet in self.ship.bullets if bullet.rect.y > -bullet.sprite.get_height()]
