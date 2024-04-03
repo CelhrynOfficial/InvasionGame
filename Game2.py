@@ -49,6 +49,9 @@ class Bullet:
             Affichage du missile
         """
         screen.blit(self.sprite, self.rect)
+
+    
+
             
 
 class enemie:
@@ -131,6 +134,13 @@ class App:
             bullet.velocity[1] = -1*self.speed
             bullet.move()
 
+            #Verifier les colision entre les lasers et les enemies
+            for enemie in self.groupe.band:
+                if bullet.rect.colliderect(enemie.rect):
+                    print("i")
+                    self.groupe.band.remove(enemie)
+                    self.ship.bullets.remove(bullet)
+
         
         #Mettre à jour la position des enemies
         for enemie in self.groupe.band:
@@ -140,11 +150,11 @@ class App:
             
             
           
-            if self.groupe.touch==len(self.groupe.band)*2: #Quand chaque mob à touché le bord deux fois, je les fais descendre
+            if self.groupe.touch>=len(self.groupe.band)*2: #Quand chaque mob à touché le bord deux fois, je les fais descendre
                 self.anc=enemie.velocity[0] #Je mémorise leurs vélocité
                 for enemie in self.groupe.band:
                     enemie.velocity[0] = 0
-                    enemie.velocity[1] = 10*enemie.speed
+                    enemie.velocity[1] = (w/90)*enemie.speed #Mon ennemie descend de 10% de l'ecrans
                     self.groupe.touch=0
 
             if enemie.rect.left < 0 or enemie.rect.right >w : #Quand un mob touche un bors il change de diréctions et mémorise qu'il à touché le bord
@@ -167,7 +177,7 @@ class App:
         infoObject = pygame.display.Info()
         self.ship.rect.y= (infoObject.current_h - (infoObject.current_h)/20)-65
 
-        #Verifier les colision entre les lasers et les enemies
+        
         
         
 
