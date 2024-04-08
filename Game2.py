@@ -61,29 +61,53 @@ class enemie:
         self.speed=1
         self.velocity=[1,0]
         
-    
+    def shot(self):
+        x=self.rect.x
+        y=self.rect.y
+        bullet_e = Bullet(self,x, y)  # Créez un nouveau laser
+        self.bullets.append(bullet_e)  # Ajoutez le laser à la liste
+
     def move(self):
         self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
 
     def draw(self):
         screen.blit(self.sprite, self.rect) #Je place mon missile à sa position
 
+class enemie_b:
+    def __init__(self, x, y): #J'initialise mon 'Bullet'
+        self.sprite=pygame.image.load("player.png") #Son sprite
+        self.rect= self.sprite.get_rect(x=x, y=y)
+        self.speed=5
+        self.velocity=[0,0]
+
+    def move(self):
+        self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
+
+    def draw(self):
+        """
+            Affichage du missile enemie
+        """
+        screen.blit(self.sprite, self.rect)
+
 class band:
     def __init__(self):
         self.band=[]
-        self.touch=0
         for i in range(8):
             for j in range(3):
                 enemies=enemie((i+0.3)*64*1.5, (j*100)+20)
                 self.band.append(enemies)
-
+    
+    def add(self):
+        enemies=enemie(0,20)
+        self.band.append(enemies)
+        
 class App:
     def __init__(self, speed=1):
             screen.blit(background, (0, 0))
             
             self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
             self.speed = speed
-            self.ship.speed=self.speed
+            self.ship.speed=self.speed*1.5
             self.pressed_keys = []  # Liste pour stocker les touches enfoncées
             self.timel=0 #Variables me permettant de gere l'envoie des laser
             self.timerl=0
@@ -138,9 +162,9 @@ class App:
             # Vérifier les collisions entre les lasers et les ennemis
             for enemy in self.groupe.band:
                 if bullet.rect.colliderect(enemy.rect):
-                    print("i")
                     self.groupe.band.remove(enemy)
                     bullets_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
+                    self.groupe.add()
 
         # Supprimez les balles de la liste originale
         for bullet in bullets_to_remove:
@@ -157,7 +181,6 @@ class App:
             # Faire descendre les ennemis lorsqu'ils atteignent le bord de l'écran
             if enemie.rect.left < 0 or enemie.rect.right > w:
                 enemie.velocity[0] = -enemie.velocity[0]  # Supprimer la multiplication par enemie.speed
-                self.groupe.touch += 1
                 enemie.velocity[1] = 10  # Faire descendre les ennemis
 
             enemie.move()  # Je fais bouger le mob
