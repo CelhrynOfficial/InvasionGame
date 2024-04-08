@@ -139,7 +139,7 @@ class App:
                 if bullet.rect.colliderect(enemie.rect):
                     print("i")
                     self.groupe.band.remove(enemie)
-                    self.ship.bullets.remove(bullet)
+                    #self.ship.bullets.remove(bullet)
 
         
         #Mettre à jour la position des enemies
