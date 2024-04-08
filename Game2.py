@@ -98,7 +98,7 @@ class band:
                 self.band.append(enemies)
     
     def add(self):
-        enemies=enemie(0,20)
+        enemies=enemie((0.3)*64*1.5, 20)
         self.band.append(enemies)
         
 class App:
@@ -107,7 +107,7 @@ class App:
             
             self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
             self.speed = speed
-            self.ship.speed=self.speed*1.5
+            self.ship.speed=self.speed*3
             self.pressed_keys = []  # Liste pour stocker les touches enfoncées
             self.timel=0 #Variables me permettant de gere l'envoie des laser
             self.timerl=0
