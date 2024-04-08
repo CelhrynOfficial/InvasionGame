@@ -137,9 +137,9 @@ class App:
             #Verifier les colision entre les lasers et les enemies
             for enemie in self.groupe.band:
                 if bullet.rect.colliderect(enemie.rect):
-                    print("i")
+                    #print("i")
                     self.groupe.band.remove(enemie)
-                    #self.ship.bullets.remove(bullet)
+                    self.ship.bullets.remove(bullet)
 
         
         #Mettre à jour la position des enemies
