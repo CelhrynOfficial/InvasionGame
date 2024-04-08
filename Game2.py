@@ -129,47 +129,43 @@ class App:
                 self.timel=self.timerl
         
                 
-        # Mettez à jour la position de tous les lasers
+       # Mettez à jour la position de tous les lasers
+        bullets_to_remove = []  # Liste temporaire pour stocker les balles à supprimer
         for bullet in self.ship.bullets:
-            bullet.velocity[1] = -1*self.speed
+            bullet.velocity[1] = -1 * self.speed
             bullet.move()
 
-            #Verifier les colision entre les lasers et les enemies
-            for enemie in self.groupe.band:
-                if bullet.rect.colliderect(enemie.rect):
+            # Vérifier les collisions entre les lasers et les ennemis
+            for enemy in self.groupe.band:
+                if bullet.rect.colliderect(enemy.rect):
                     print("i")
-                    self.groupe.band.remove(enemie)
-                    self.ship.bullets.remove(bullet)
+                    self.groupe.band.remove(enemy)
+                    bullets_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
 
-        
-        #Mettre à jour la position des enemies
+        # Supprimez les balles de la liste originale
+        for bullet in bullets_to_remove:
+            if bullet in self.ship.bullets:  # Vérifiez si la balle est toujours dans la liste
+                self.ship.bullets.remove(bullet)
+
+
+        # Mettre à jour la position des enemies
         for enemie in self.groupe.band:
             
             infoObject = pygame.display.Info()
-            w=infoObject.current_w #Cette variable me permet de faire faire des toures d'écrans aux enemis
-            
-            
-          
-            if self.groupe.touch>=len(self.groupe.band)*2: #Quand chaque mob à touché le bord deux fois, je les fais descendre
-                self.anc=enemie.velocity[0] #Je mémorise leurs vélocité
-                for enemie in self.groupe.band:
-                    enemie.velocity[0] = 0
-                    enemie.velocity[1] = (w/90)*enemie.speed #Mon ennemie descend de 10% de l'ecrans
-                    self.groupe.touch=0
+            w = infoObject.current_w  # Cette variable me permet de faire faire des tours d'écrans aux enemis
 
-            if enemie.rect.left < 0 or enemie.rect.right >w : #Quand un mob touche un bors il change de diréctions et mémorise qu'il à touché le bord
-                enemie.velocity[0] = -enemie.velocity[0]*enemie.speed
-                self.anc=enemie.velocity[0]
-                self.groupe.touch+=1
+            # Faire descendre les ennemis lorsqu'ils atteignent le bord de l'écran
+            if enemie.rect.left < 0 or enemie.rect.right > w:
+                enemie.velocity[0] = -enemie.velocity[0]  # Supprimer la multiplication par enemie.speed
+                self.groupe.touch += 1
+                enemie.velocity[1] = 10  # Faire descendre les ennemis
+
+            enemie.move()  # Je fais bouger le mob
+            enemie.velocity[1] = 0  # Réinitialiser la vitesse verticale après le mouvement
 
 
-            enemie.move() #Je fais bouger le mob
-            if enemie.velocity[0]==0: #Si les mobs sont descendu, je repasse leurs velocité à leurs valeurs avant les descentes
-                enemie.velocity[0]= self.anc
-            enemie.velocity[1]=0
-
-            
-        
+                    
+                
         # Supprimez les lasers qui ont quitté l'écran
         self.ship.bullets = [bullet for bullet in self.ship.bullets if bullet.rect.y > -bullet.sprite.get_height()]
 
