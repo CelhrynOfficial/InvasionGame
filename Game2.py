@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 import sys
-import time
+import time 
 
 # Définition des couleurs
 WHITE = (255, 255, 255)
@@ -55,10 +55,10 @@ class Bullet:
             
 
 class enemie:
-    def __init__(self, x, y):
+    def __init__(self, x, y,speed=1):
         self.sprite=pygame.image.load("player.png")
         self.rect=self.sprite.get_rect(x=x, y=y)
-        self.speed=1
+        self.speed=speed
         self.velocity=[1,0]
         
     def shot(self):
@@ -77,7 +77,7 @@ class enemie_b:
     def __init__(self, x, y): #J'initialise mon 'Bullet'
         self.sprite=pygame.image.load("player.png") #Son sprite
         self.rect= self.sprite.get_rect(x=x, y=y)
-        self.speed=5
+        self.speed=1
         self.velocity=[0,0]
 
     def move(self):
@@ -92,27 +92,43 @@ class enemie_b:
 class band:
     def __init__(self):
         self.band=[]
+        self.speed=1
         for i in range(8):
             for j in range(3):
-                enemies=enemie((i+0.3)*64*1.5, (j*100)+20)
+                enemies=enemie((i+0.3)*64*1.5, (j*100)+20, self.speed)
                 self.band.append(enemies)
     
     def add(self):
-        enemies=enemie((0.3)*64*1.5, 20)
+        enemies=enemie((0.3)*64*1.5, 20, self.speed)
         self.band.append(enemies)
+
+class score:
+    def __init__(self):
+        self.score=0
+    
+    def draw(self):
+        print("Score: ",self.score)
         
 class App:
     def __init__(self, speed=1):
             screen.blit(background, (0, 0))
             
             self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
-            self.speed = speed
-            self.ship.speed=self.speed*3
+            self.ship.speed=speed*2
+
             self.pressed_keys = []  # Liste pour stocker les touches enfoncées
+
             self.timel=0 #Variables me permettant de gere l'envoie des laser
             self.timerl=0
-            self.anc=0
+            
+
             self.groupe=band()
+
+            self.tog=time.time()
+            self.anctog=time.time()
+            self.dif=0
+
+            self.score=score()
         
 
         
@@ -156,7 +172,7 @@ class App:
        # Mettez à jour la position de tous les lasers
         bullets_to_remove = []  # Liste temporaire pour stocker les balles à supprimer
         for bullet in self.ship.bullets:
-            bullet.velocity[1] = -1 * self.speed
+            bullet.velocity[1] = -1 
             bullet.move()
 
             # Vérifier les collisions entre les lasers et les ennemis
@@ -164,6 +180,7 @@ class App:
                 if bullet.rect.colliderect(enemy.rect):
                     self.groupe.band.remove(enemy)
                     bullets_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
+                    self.score.score= self.score.score+100
                     self.groupe.add()
 
         # Supprimez les balles de la liste originale
@@ -181,7 +198,7 @@ class App:
             # Faire descendre les ennemis lorsqu'ils atteignent le bord de l'écran
             if enemie.rect.left < 0 or enemie.rect.right > w:
                 enemie.velocity[0] = -enemie.velocity[0]  # Supprimer la multiplication par enemie.speed
-                enemie.velocity[1] = 10  # Faire descendre les ennemis
+                enemie.velocity[1] = 20  # Faire descendre les ennemis
 
             enemie.move()  # Je fais bouger le mob
             enemie.velocity[1] = 0  # Réinitialiser la vitesse verticale après le mouvement
@@ -196,6 +213,27 @@ class App:
         infoObject = pygame.display.Info()
         self.ship.rect.y= (infoObject.current_h - (infoObject.current_h)/20)-65
 
+        #Changer la vitesse des ennemis, toute les 30 seconde
+
+        self.tog=time.time()
+        self.dif=self.tog - self.anctog
+        #print(self.tog, self.anctog)
+        if self.dif >=1:
+            x=2
+            print(self.groupe.speed)
+            if self.groupe.speed>=x:
+                self.groupe.speed=x
+            else:
+                self.groupe.speed=self.groupe.speed*1.5
+                if self.groupe.speed>=x:
+                    self.groupe.speed=x
+
+            for enemie in self.groupe.band:  
+                    enemie.speed=self.groupe.speed
+            
+            self.anctog=self.tog
+
+
         
         
         
@@ -209,6 +247,7 @@ class App:
         for bullet in self.ship.bullets:  # Dessinez tous les lasers
             bullet.draw()
 
+        self.score.draw()
 
         pygame.display.flip()  # J'affiche tous les sprites
 
@@ -223,7 +262,7 @@ background = pygame.Surface(screen.get_size()) #Je crée mon fond d'écran
 background = background.convert()
 #background.fill((250, 250, 250)) #Je nettoie l'écran   
     
-appli=App(1) #Je définie mon application, avec une valeur de vitesse
+appli=App() #Je définie mon application, avec une valeur de vitesse
 
 
 key_events = []  # Liste pour stocker les événements clavier
