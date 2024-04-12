@@ -94,7 +94,7 @@ class band:
         self.band=[]
         self.speed=1
         for i in range(8):
-            for j in range(3):
+            for j in range(2):
                 enemies=enemie((i+0.3)*64*1.5, (j*100)+20, self.speed)
                 self.band.append(enemies)
     
@@ -105,16 +105,22 @@ class band:
 class score:
     def __init__(self):
         self.score=0
+        self.font=pygame.font.Font(None, 24)
+        
     
     def draw(self):
-        print("Score: ",self.score)
+        scr=str(self.score)
+        txt="Score: "+ scr
+        text = self.font.render(txt,1,(255,0,255))
+        screen.blit(text, (0,0))
+
         
 class App:
     def __init__(self, speed=1):
             screen.blit(background, (0, 0))
             
             self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
-            self.ship.speed=speed*2
+            self.ship.speed=speed*2.2 #Création du vaisseau
 
             self.pressed_keys = []  # Liste pour stocker les touches enfoncées
 
@@ -122,13 +128,12 @@ class App:
             self.timerl=0
             
 
-            self.groupe=band()
+            self.groupe=band() #Je crée les enemies
 
-            self.tog=time.time()
+            self.tog=time.time() #Variable me permettant de gerer le changement de vitesse des enemies 
             self.anctog=time.time()
-            self.dif=0
 
-            self.score=score()
+            self.score=score() #Le score
         
 
         
@@ -164,7 +169,7 @@ class App:
         #Faire tirer le vaisseau
         if pygame.K_SPACE in self.pressed_keys:
             self.timerl=time.time()
-            if self.timerl-self.timel>=0.5: #Cette conditionelle empche de tirer le missile trop vite
+            if self.timerl-self.timel>=0.5: #Cette conditionelle empeche de tirer le missile trop vite
                 self.ship.shot()
                 self.timel=self.timerl
         
@@ -180,7 +185,7 @@ class App:
                 if bullet.rect.colliderect(enemy.rect):
                     self.groupe.band.remove(enemy)
                     bullets_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
-                    self.score.score= self.score.score+100
+                    self.score.score= self.score.score+100 #Si un ennemei est detruit je rajoue 100 points à mon score
                     self.groupe.add()
 
         # Supprimez les balles de la liste originale
@@ -215,23 +220,23 @@ class App:
 
         #Changer la vitesse des ennemis, toute les 30 seconde
 
-        self.tog=time.time()
-        self.dif=self.tog - self.anctog
-        #print(self.tog, self.anctog)
-        if self.dif >=1:
-            x=2
-            print(self.groupe.speed)
-            if self.groupe.speed>=x:
+        self.tog=time.time() #J'enregiste le temps du jeu
+        
+        
+        if self.tog - self.anctog >=1: #Si la difference entre le moment actuel et le dernier moment de modification est plus que 10 sec, je modifie la vitesse 
+            x=2 #Ici x represente la limite de vitesse
+            
+            if self.groupe.speed>=x:#Si la limite est depasser, je remet ma vitesse à sa limite
                 self.groupe.speed=x
             else:
-                self.groupe.speed=self.groupe.speed*1.5
-                if self.groupe.speed>=x:
+                self.groupe.speed=self.groupe.speed*1.3 #Sinon je rajoute la moitié de la vitesse actuel
+                if self.groupe.speed>=x: #Si la limite est depasser, je remet ma vitesse à sa limite
                     self.groupe.speed=x
 
-            for enemie in self.groupe.band:  
+            for enemie in self.groupe.band:  #Et je l'applique à ton mon groupe
                     enemie.speed=self.groupe.speed
             
-            self.anctog=self.tog
+            self.anctog=self.tog #Je change la valeur du dernier moment de modification
 
 
         
@@ -260,7 +265,7 @@ pygame.display.set_caption('Invaders') #Je choisi le nom de ma fenetre
 
 background = pygame.Surface(screen.get_size()) #Je crée mon fond d'écran 
 background = background.convert()
-#background.fill((250, 250, 250)) #Je nettoie l'écran   
+  
     
 appli=App() #Je définie mon application, avec une valeur de vitesse
 
@@ -268,6 +273,7 @@ appli=App() #Je définie mon application, avec une valeur de vitesse
 key_events = []  # Liste pour stocker les événements clavier
 
 game=True
+
 
 while game==True:  # Boucle principale du jeu
 
@@ -283,11 +289,12 @@ while game==True:  # Boucle principale du jeu
     appli.update(key_events)
     appli.draw()
 
+
     for enemis in appli.groupe.band: #Si un enemies dépasse mon vaisseau, on arrete le jeu, le joueur à perdu
         if enemis.rect.y>= appli.ship.rect.y:
             game=False
     
-
+   
     
     
     key_events.clear()  # Nettoyez la liste des événements clavier après les avoir traités
