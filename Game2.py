@@ -222,9 +222,9 @@ class App:
                   
 
         # Supprimez les balles de la liste originale
-        for bullet in bullets_e_to_remove:
-            if bullet in self.groupe.bullets:  # Vérifiez si la balle est toujours dans la liste
-                self.groupe.bullets.remove(bullet)
+        for bullet in bullets_to_remove:
+            if bullet in self.ship.bullets:  # Vérifiez si la balle est toujours dans la liste
+                self.ship.bullets.remove(bullet)
 
 
         # Mettre à jour la position des enemies
