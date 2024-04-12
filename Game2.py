@@ -223,7 +223,7 @@ class App:
         self.tog=time.time() #J'enregiste le temps du jeu
         
         
-        if self.tog - self.anctog >=1: #Si la difference entre le moment actuel et le dernier moment de modification est plus que 10 sec, je modifie la vitesse 
+        if self.tog - self.anctog >=15: #Si la difference entre le moment actuel et le dernier moment de modification est plus que 10 sec, je modifie la vitesse 
             x=2 #Ici x represente la limite de vitesse
             
             if self.groupe.speed>=x:#Si la limite est depasser, je remet ma vitesse à sa limite
