@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 import sys
 import time 
+import random
 
 # Définition des couleurs
 WHITE = (255, 255, 255)
@@ -16,7 +17,7 @@ infoObject = pygame.display.Info()  # Définir infoObject ici
 
 class Ship:
     def __init__(self, x, y):
-        self.sprite = pygame.image.load("player.png")
+        self.sprite = pygame.image.load("bob4.svg")
         self.rect= self.sprite.get_rect(x=x, y=y)
         self.speed=1
         self.velocity=[0,0]
@@ -36,7 +37,7 @@ class Ship:
 
 class Bullet:
     def __init__(self, ship, x, y): #J'initialise mon 'Bullet'
-        self.sprite=pygame.image.load("player.png") #Son sprite
+        self.sprite=pygame.image.load("bull.svg") #Son sprite
         self.rect= self.sprite.get_rect(x=x, y=y)
         self.speed=5
         self.velocity=[0,0]
@@ -60,18 +61,16 @@ class enemie:
         self.rect=self.sprite.get_rect(x=x, y=y)
         self.speed=speed
         self.velocity=[1,0]
-        
-    def shot(self):
-        x=self.rect.x
-        y=self.rect.y
-        bullet_e = Bullet(self,x, y)  # Créez un nouveau laser
-        self.bullets.append(bullet_e)  # Ajoutez le laser à la liste
+       
 
     def move(self):
         self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
 
     def draw(self):
         screen.blit(self.sprite, self.rect) #Je place mon missile à sa position
+
+    
+
 
 class enemie_b:
     def __init__(self, x, y): #J'initialise mon 'Bullet'
@@ -92,15 +91,26 @@ class enemie_b:
 class band:
     def __init__(self):
         self.band=[]
+        self.bullets=[]
         self.speed=1
         for i in range(8):
-            for j in range(2):
+            for j in range(3) :
                 enemies=enemie((i+0.3)*64*1.5, (j*100)+20, self.speed)
                 self.band.append(enemies)
     
     def add(self):
         enemies=enemie((0.3)*64*1.5, 20, self.speed)
         self.band.append(enemies)
+
+    def shot(self):
+         
+        i=random.randint(0, len(self.band)-1)
+        x=self.band[i].rect.x
+        y=self.band[i].rect.y
+        bullet_e = enemie_b( x, y)  # Créez un nouveau laser
+        self.bullets.append(bullet_e)  # Ajoutez le laser à la liste
+       
+        
 
 class score:
     def __init__(self):
@@ -119,6 +129,8 @@ class App:
     def __init__(self, speed=1):
             screen.blit(background, (0, 0))
             
+            self.game=True
+
             self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
             self.ship.speed=speed*2.2 #Création du vaisseau
 
@@ -188,10 +200,31 @@ class App:
                     self.score.score= self.score.score+100 #Si un ennemei est detruit je rajoue 100 points à mon score
                     self.groupe.add()
 
+        #Faire tirer les ennemis
+        self.timerl=time.time()
+        if self.timerl-self.timel>=0.5: #Cette conditionelle empeche de tirer le missile trop vite
+            self.groupe.shot()
+            self.timel=self.timerl
+        
+                
+       # Mettez à jour la position de tous les lasers enemie
+        bullets_e_to_remove = []  # Liste temporaire pour stocker les balles à supprimer
+        for bullet in self.groupe.bullets:
+            bullet.velocity[1] = 1 
+            bullet.move()
+
+            # Vérifier les collisions entre les lasers et le joueur
+            
+            if bullet.rect.colliderect(self.ship.rect):
+                    self.groupe.band.remove(bullet)
+                    bullets_e_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
+                    
+                  
+
         # Supprimez les balles de la liste originale
-        for bullet in bullets_to_remove:
-            if bullet in self.ship.bullets:  # Vérifiez si la balle est toujours dans la liste
-                self.ship.bullets.remove(bullet)
+        for bullet in bullets_e_to_remove:
+            if bullet in self.groupe.bullets:  # Vérifiez si la balle est toujours dans la liste
+                self.groupe.bullets.remove(bullet)
 
 
         # Mettre à jour la position des enemies
@@ -223,13 +256,13 @@ class App:
         self.tog=time.time() #J'enregiste le temps du jeu
         
         
-        if self.tog - self.anctog >=15: #Si la difference entre le moment actuel et le dernier moment de modification est plus que 10 sec, je modifie la vitesse 
+        if self.tog - self.anctog >=5: #Si la difference entre le moment actuel et le dernier moment de modification est plus que 10 sec, je modifie la vitesse 
             x=2 #Ici x represente la limite de vitesse
             
             if self.groupe.speed>=x:#Si la limite est depasser, je remet ma vitesse à sa limite
                 self.groupe.speed=x
             else:
-                self.groupe.speed=self.groupe.speed*1.3 #Sinon je rajoute la moitié de la vitesse actuel
+                self.groupe.speed=self.groupe.speed*1.5 #Sinon je rajoute la moitié de la vitesse actuel
                 if self.groupe.speed>=x: #Si la limite est depasser, je remet ma vitesse à sa limite
                     self.groupe.speed=x
 
@@ -252,6 +285,9 @@ class App:
         for bullet in self.ship.bullets:  # Dessinez tous les lasers
             bullet.draw()
 
+        for bullet in self.groupe.bullets:
+            bullet.draw
+
         self.score.draw()
 
         pygame.display.flip()  # J'affiche tous les sprites
@@ -272,10 +308,10 @@ appli=App() #Je définie mon application, avec une valeur de vitesse
 
 key_events = []  # Liste pour stocker les événements clavier
 
-game=True
 
 
-while game==True:  # Boucle principale du jeu
+
+while appli.game==True:  # Boucle principale du jeu
 
     for event in pygame.event.get():  # Récupère tous les événements pygame
         if event.type == pygame.QUIT:
@@ -292,7 +328,7 @@ while game==True:  # Boucle principale du jeu
 
     for enemis in appli.groupe.band: #Si un enemies dépasse mon vaisseau, on arrete le jeu, le joueur à perdu
         if enemis.rect.y>= appli.ship.rect.y:
-            game=False
+            appli.game=False
     
    
     
