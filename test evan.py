@@ -214,7 +214,7 @@ class App:
 
 ###################################################################################################################################################
         #Faire tirer les ennemis
-        if self.cycle%50==0:
+        if self.cycle%200==0:
             self.groupe.shot()
         
              
@@ -229,12 +229,13 @@ class App:
                 if bullet.rect.colliderect(self.ship.rect):
                     self.groupe.bullets.remove(bullet)
                     bullets_e_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
-                    
+                    self.game=False
 
         # Supprimez les balles de la liste originale
         for bullet in bullets_e_to_remove:
             if bullet in self.groupe.bullets:  # Vérifiez si la balle est toujours dans la liste
                 self.groupe.bullets.remove(bullet)
+                
 
 #################################################################################################################################################
 
@@ -306,7 +307,7 @@ class App:
             bullet.draw()
 
         for bullet in self.groupe.bullets:
-            bullet.draw
+            bullet.draw()
 
         
 
@@ -351,6 +352,8 @@ while appli.game==True:  # Boucle principale du jeu
     for enemis in appli.groupe.band: #Si un enemies dépasse mon vaisseau, on arrete le jeu, le joueur à perdu
         if enemis.rect.y>= appli.ship.rect.y:
             appli.game=False
+
+
     
    
     
