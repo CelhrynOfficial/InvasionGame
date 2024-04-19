@@ -52,12 +52,9 @@ class Bullet:
         screen.blit(self.sprite, self.rect)
 
     
-
-            
-
 class enemie:
     def __init__(self, x, y,speed=1):
-        self.sprite=pygame.image.load("player.png")
+        self.sprite=pygame.image.load("jellyy.png")
         self.rect=self.sprite.get_rect(x=x, y=y)
         self.speed=speed
         self.velocity=[1,0]
@@ -73,7 +70,7 @@ class enemie:
 
 
 class enemie_b:
-    def __init__(self, x, y): #J'initialise mon 'Bullet'
+    def __init__(self, x, y): #J'initialise mon 'Bullet' enemie
         self.sprite=pygame.image.load("player.png") #Son sprite
         self.rect= self.sprite.get_rect(x=x, y=y)
         self.speed=1
@@ -136,22 +133,28 @@ class App:
 
             self.pressed_keys = []  # Liste pour stocker les touches enfoncées
 
-            self.timel=0 #Variables me permettant de gere l'envoie des laser
+            self.timel=0 #Variables me permettant de gere l'envoie des laser du joueur
             self.timerl=0
-            
 
             self.groupe=band() #Je crée les enemies
 
             self.tog=time.time() #Variable me permettant de gerer le changement de vitesse des enemies 
             self.anctog=time.time()
 
+            self.cycle=0 #Variable qui mémorise le nombre de cycle du jeu
+
             self.score=score() #Le score
+
         
 
         
         
 
     def update(self, key_events):
+
+        self.cycle+=1 #A chaque fois que je fais un cycle je le mémorise
+        #print(self.cycle)
+
         for event in key_events:
             if event.type == pygame.KEYDOWN:
                 if event.key not in self.pressed_keys:  # Ajoutez la touche à la liste si elle n'y est pas déjà
@@ -200,24 +203,7 @@ class App:
                     self.score.score= self.score.score+100 #Si un ennemei est detruit je rajoue 100 points à mon score
                     self.groupe.add()
 
-        #Faire tirer les ennemis
-        self.timerl=time.time()
-        if self.timerl-self.timel>=0.5: #Cette conditionelle empeche de tirer le missile trop vite
-            self.groupe.shot()
-            self.timel=self.timerl
-        
-                
-       # Mettez à jour la position de tous les lasers enemie
-        bullets_e_to_remove = []  # Liste temporaire pour stocker les balles à supprimer
-        for bullet in self.groupe.bullets:
-            bullet.velocity[1] = 1 
-            bullet.move()
-
-            # Vérifier les collisions entre les lasers et le joueur
-            
-            if bullet.rect.colliderect(self.ship.rect):
-                    self.groupe.band.remove(bullet)
-                    bullets_e_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
+      
                     
                   
 
@@ -228,18 +214,19 @@ class App:
 
 
         # Mettre à jour la position des enemies
-        for enemie in self.groupe.band:
-            
-            infoObject = pygame.display.Info()
-            w = infoObject.current_w  # Cette variable me permet de faire faire des tours d'écrans aux enemis
+        if self.cycle%3==0:
+            for enemie in self.groupe.band:
+                
+                infoObject = pygame.display.Info()
+                w = infoObject.current_w  # Cette variable me permet de faire faire des tours d'écrans aux enemis
 
-            # Faire descendre les ennemis lorsqu'ils atteignent le bord de l'écran
-            if enemie.rect.left < 0 or enemie.rect.right > w:
-                enemie.velocity[0] = -enemie.velocity[0]  # Supprimer la multiplication par enemie.speed
-                enemie.velocity[1] = 20  # Faire descendre les ennemis
+                # Faire descendre les ennemis lorsqu'ils atteignent le bord de l'écran
+                if enemie.rect.left < 0 or enemie.rect.right > w:
+                    enemie.velocity[0] = -enemie.velocity[0]  # Supprimer la multiplication par enemie.speed
+                    enemie.velocity[1] = 20  # Faire descendre les ennemis
 
-            enemie.move()  # Je fais bouger le mob
-            enemie.velocity[1] = 0  # Réinitialiser la vitesse verticale après le mouvement
+                enemie.move()  # Je fais bouger le mob
+                enemie.velocity[1] = 0  # Réinitialiser la vitesse verticale après le mouvement
 
 
                     
@@ -255,14 +242,20 @@ class App:
 
         self.tog=time.time() #J'enregiste le temps du jeu
         
-        
-        if self.tog - self.anctog >=5: #Si la difference entre le moment actuel et le dernier moment de modification est plus que 10 sec, je modifie la vitesse 
-            x=2 #Ici x represente la limite de vitesse
+        x=3 #Ici x represente la limite de vitesse
+
+        if self.score.score>10000: #Si le joueur depasse le score de 10.000 point
+            x=4 #Je change la limite de vitesse
+            self.groupe.speed =x
+            for enemie in self.groupe.band:  #Et je l'applique à ton mon groupe
+                    enemie.speed=self.groupe.speed
+
+        if self.tog - self.anctog >=10 : #Si la difference entre le moment actuel et le dernier moment de modification est plus que 10 sec, je modifie la vitesse 
             
             if self.groupe.speed>=x:#Si la limite est depasser, je remet ma vitesse à sa limite
                 self.groupe.speed=x
             else:
-                self.groupe.speed=self.groupe.speed*1.5 #Sinon je rajoute la moitié de la vitesse actuel
+                self.groupe.speed=self.groupe.speed+1 #Sinon je rajoute la moitié de la vitesse actuel
                 if self.groupe.speed>=x: #Si la limite est depasser, je remet ma vitesse à sa limite
                     self.groupe.speed=x
 
@@ -270,6 +263,8 @@ class App:
                     enemie.speed=self.groupe.speed
             
             self.anctog=self.tog #Je change la valeur du dernier moment de modification
+        
+        
 
 
         
