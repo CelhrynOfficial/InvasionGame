@@ -212,7 +212,6 @@ class App:
             if bullet in self.ship.bullets:  # Vérifiez si la balle est toujours dans la liste
                 self.ship.bullets.remove(bullet)
 
-###################################################################################################################################################
         #Faire tirer les ennemis
         if self.cycle%200==0:
             self.groupe.shot()
@@ -237,7 +236,6 @@ class App:
                 self.groupe.bullets.remove(bullet)
                 
 
-#################################################################################################################################################
 
         # Mettre à jour la position des enemies
         if self.cycle%3==0:
