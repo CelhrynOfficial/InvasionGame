@@ -71,7 +71,7 @@ class enemie:
 
 class enemie_b:
     def __init__(self, x, y): #J'initialise mon 'Bullet' enemie
-        self.sprite=pygame.image.load("player.png") #Son sprite
+        self.sprite=pygame.image.load("bull.svg") #Son sprite
         self.rect= self.sprite.get_rect(x=x, y=y)
         self.speed=1
         self.velocity=[0,0]
@@ -104,7 +104,7 @@ class band:
         i=random.randint(0, len(self.band)-1)
         x=self.band[i].rect.x
         y=self.band[i].rect.y
-        bullet_e = enemie_b( x, y)  # Créez un nouveau laser
+        bullet_e = enemie_b(x, y)  # Créez un nouveau laser
         self.bullets.append(bullet_e)  # Ajoutez le laser à la liste
        
         
@@ -212,6 +212,32 @@ class App:
             if bullet in self.ship.bullets:  # Vérifiez si la balle est toujours dans la liste
                 self.ship.bullets.remove(bullet)
 
+###################################################################################################################################################
+        #Faire tirer les ennemis
+        if self.cycle%200==0:
+            self.groupe.shot()
+        
+             
+        # Mettez à jour la position de tous les lasers ennemis
+        bullets_e_to_remove = []  # Liste temporaire pour stocker les balles à supprimer
+        for bullet in self.groupe.bullets:
+            bullet.velocity[1] = 1 
+            bullet.move()
+
+            # Vérifier les collisions entre les lasers et le joueur
+            for bullet in self.groupe.bullets:
+                if bullet.rect.colliderect(self.ship.rect):
+                    self.groupe.bullets.remove(bullet)
+                    bullets_e_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
+                    self.game=False
+
+        # Supprimez les balles de la liste originale
+        for bullet in bullets_e_to_remove:
+            if bullet in self.groupe.bullets:  # Vérifiez si la balle est toujours dans la liste
+                self.groupe.bullets.remove(bullet)
+                
+
+#################################################################################################################################################
 
         # Mettre à jour la position des enemies
         if self.cycle%3==0:
@@ -281,7 +307,9 @@ class App:
             bullet.draw()
 
         for bullet in self.groupe.bullets:
-            bullet.draw
+            bullet.draw()
+
+        
 
         self.score.draw()
 
@@ -324,6 +352,8 @@ while appli.game==True:  # Boucle principale du jeu
     for enemis in appli.groupe.band: #Si un enemies dépasse mon vaisseau, on arrete le jeu, le joueur à perdu
         if enemis.rect.y>= appli.ship.rect.y:
             appli.game=False
+
+
     
    
     
