@@ -258,6 +258,8 @@ class App:
         # Supprimez les lasers qui ont quitté l'écran
         self.ship.bullets = [bullet for bullet in self.ship.bullets if bullet.rect.y > -bullet.sprite.get_height()]
 
+        # self.groupe.bullets = [bullet for bullet in self.groupe.bullets if bullet.rect.y > bullet.sprite.get_height()]
+
         #Maintenir le vaisseau en bas de l'écran
         infoObject = pygame.display.Info()
         self.ship.rect.y= (infoObject.current_h - (infoObject.current_h)/20)-65

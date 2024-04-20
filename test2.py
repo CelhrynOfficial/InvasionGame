@@ -96,7 +96,7 @@ class App:
             bullet.draw()
         pygame.display.flip()  # J'affiche tous les sprites
 
-pygame.init() #Je crée l'interface pygame
+
 pygame.display.set_caption('Invaders') #Je choisi le nom de ma fenetre
 
 background = pygame.Surface(screen.get_size()) #Je crée mon fond d'écran 
