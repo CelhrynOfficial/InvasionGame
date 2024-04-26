@@ -270,7 +270,7 @@ class App:
         
         x=3 #Ici x represente la limite de vitesse
 
-        if self.score.score>10000: #Si le joueur depasse le score de 10.000 point
+        if self.score.score>1000: #Si le joueur depasse le score de 10.000 point
             x=4 #Je change la limite de vitesse
             self.groupe.speed =x
             for enemie in self.groupe.band:  #Et je l'applique à ton mon groupe
