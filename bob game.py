@@ -4,16 +4,7 @@ import sys
 import time 
 import random
 
-# Définition des couleurs
-WHITE = (255, 255, 255)
 
-# Taille initiale de la fenêtre
-BASE_WIDTH, BASE_HEIGHT = 800, 600
-
-screen = pygame.display.set_mode((BASE_WIDTH, BASE_HEIGHT), RESIZABLE)
-
-
-infoObject = pygame.display.Info()  # Définir infoObject ici
 
 class Ship:
     def __init__(self, x, y):
@@ -89,7 +80,7 @@ class band:
     def __init__(self):
         self.band=[]
         self.bullets=[]
-        self.speed=1
+        self.speed=2
         for i in range(8):
             for j in range(3) :
                 enemies=enemie((i+0.3)*64*1.5, (j*100)+20, self.speed)
@@ -123,13 +114,13 @@ class score:
 
         
 class App:
-    def __init__(self, speed=1):
+    def __init__(self, speed=2):
             screen.blit(background, (0, 0))
             
             self.game=True
 
             self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
-            self.ship.speed=speed*2.2 #Création du vaisseau
+            self.ship.speed=speed*2 #Création du vaisseau
 
             self.pressed_keys = []  # Liste pour stocker les touches enfoncées
 
@@ -145,7 +136,7 @@ class App:
 
             self.score=score() #Le score
 
-        
+            self.background= pygame.image.load('Spong_Bob background.png')
 
         
         
@@ -268,10 +259,10 @@ class App:
 
         self.tog=time.time() #J'enregiste le temps du jeu
         
-        x=3 #Ici x represente la limite de vitesse
+        x=5 #Ici x represente la limite de vitesse
 
-        if self.score.score>1000: #Si le joueur depasse le score de 10.000 point
-            x=4 #Je change la limite de vitesse
+        if self.score.score>10000: #Si le joueur depasse le score de 10.000 point
+            x=6 #Je change la limite de vitesse
             self.groupe.speed =x
             for enemie in self.groupe.band:  #Et je l'applique à ton mon groupe
                     enemie.speed=self.groupe.speed
@@ -281,7 +272,7 @@ class App:
             if self.groupe.speed>=x:#Si la limite est depasser, je remet ma vitesse à sa limite
                 self.groupe.speed=x
             else:
-                self.groupe.speed=self.groupe.speed+1 #Sinon je rajoute la moitié de la vitesse actuel
+                self.groupe.speed=self.groupe.speed+1 #Sinon je rajoute 1 à la vitesse actuel
                 if self.groupe.speed>=x: #Si la limite est depasser, je remet ma vitesse à sa limite
                     self.groupe.speed=x
 
@@ -298,7 +289,8 @@ class App:
         
 
     def draw(self):
-        screen.fill((255, 255, 255))  # J'efface l'écran précédent
+        screen.fill((0, 0, 0))  # J'efface l'écran précédent
+        screen.blit(self.background,(0,0))
         self.ship.draw()  # Je draw le vaisseau à sa nouvelle position
         for enemie in self.groupe.band:
             enemie.draw()
@@ -316,7 +308,13 @@ class App:
         pygame.display.flip()  # J'affiche tous les sprites
 
 
+# Taille initiale de la fenêtre
+BASE_WIDTH, BASE_HEIGHT = 800, 600
+
 pygame.init() #Je crée l'interface pygame
+
+screen = pygame.display.set_mode((BASE_WIDTH, BASE_HEIGHT), RESIZABLE)
+
 infoObject = pygame.display.Info() #Je récupere les infos de l'ecran pour adapter la taille de la fenetre
 #screen=pygame.display.set_mode((infoObject.current_w, infoObject.current_h-20))#Je crée la fenetre en fonction de la taille de l'écran
 pygame.display.set_caption('Invaders') #Je choisi le nom de ma fenetre
