@@ -80,7 +80,7 @@ class band:
     def __init__(self):
         self.band=[]
         self.bullets=[]
-        self.speed=2
+        self.speed=1
         for i in range(8):
             for j in range(3) :
                 enemies=enemie((i+0.3)*64*1.5, (j*100)+20, self.speed)
@@ -114,13 +114,13 @@ class score:
 
         
 class App:
-    def __init__(self, speed=2):
+    def __init__(self, speed=1):
             screen.blit(background, (0, 0))
             
             self.game=True
 
             self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
-            self.ship.speed=speed*2 #Création du vaisseau
+            self.ship.speed=speed #Création du vaisseau
 
             self.pressed_keys = []  # Liste pour stocker les touches enfoncées
 
@@ -136,7 +136,7 @@ class App:
 
             self.score=score() #Le score
 
-            self.background= pygame.image.load('Spong_Bob background.png')
+            self.background= pygame.image.load('cdd-fond-décran.jpg')
 
         
         
@@ -259,15 +259,15 @@ class App:
 
         self.tog=time.time() #J'enregiste le temps du jeu
         
-        x=5 #Ici x represente la limite de vitesse
+        x=3 #Ici x represente la limite de vitesse
 
         if self.score.score>10000: #Si le joueur depasse le score de 10.000 point
-            x=6 #Je change la limite de vitesse
+            x=4 #Je change la limite de vitesse
             self.groupe.speed =x
             for enemie in self.groupe.band:  #Et je l'applique à ton mon groupe
                     enemie.speed=self.groupe.speed
 
-        if self.tog - self.anctog >=10 : #Si la difference entre le moment actuel et le dernier moment de modification est plus que 10 sec, je modifie la vitesse 
+        if self.tog - self.anctog >=15 : #Si la difference entre le moment actuel et le dernier moment de modification est plus que 10 sec, je modifie la vitesse 
             
             if self.groupe.speed>=x:#Si la limite est depasser, je remet ma vitesse à sa limite
                 self.groupe.speed=x
