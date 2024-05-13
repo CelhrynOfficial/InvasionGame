@@ -24,7 +24,7 @@ while run:
 
     window.fill((127, 127, 127))
     window.blit(pygame_surface, pygame_surface.get_rect(center = window.get_rect().center))
-    window.blit(bob, (50,130))
+    #window.blit(bob, (50,130))
     #window.blit()
     pygame.display.flip()
 
