@@ -339,35 +339,14 @@ appli=App() #Je définie mon application, avec une valeur de vitesse
 key_events = []  # Liste pour stocker les événements clavier
 
 perso = image.load('bobsp.svg')
-#les images
-"""fond = image.load('praa.svg')
-fond = fond.convert()"""
+
 
 imageSprite = {K_DOWN:[perso.subsurface(x,0,96,96)for x in range(0,384,96)],
                K_LEFT:[perso.subsurface(x,96,96,96)for x in range(0,384,96)],
                K_RIGHT:[perso.subsurface(x,192,96,96)for x in range(0,384,96)],
                K_UP:[perso.subsurface(x,288,96,96)for x in range(0,384,96)]}
  
-#paramètres de départ
-jouer = True
 
-
-index_img = 0
-
-
- 
-
- 
-    
-"""
-    if etat==1:
-        #on execute les fonctions
-        deplacementPerso()
-        #On affiche les images
-        fenetre.blit(fond, (0,0))
-        fenetre.blit(imageSprite[direction][index_img],(xSprite,ySprite))
-        if k[K_r]:
-            etat=0"""
  
 
 
@@ -392,7 +371,6 @@ while appli.game==True:  # Boucle principale du jeu
         pygame.display.flip()
         k = key.get_pressed()
         if k[K_RETURN]:
-            print("i")
             etat=1
 
     if etat==1:
