@@ -17,6 +17,8 @@ init()"""
 
 class Ship:
     def __init__(self, x, y):
+        self.perso= image.load('bob4.svg')
+        self.rect= self.perso.get_rect(x=x, y=y)
         self.perso = image.load('bobsp.svg')
 
 
@@ -25,7 +27,7 @@ class Ship:
                     K_RIGHT:[self.perso.subsurface(x,192,96,96)for x in range(0,384,96)],
                     K_UP:[self.perso.subsurface(x,288,96,96)for x in range(0,384,96)]}
         
-        self.rect= self.perso.get_rect(x=x, y=y)
+        
         self.speed=1
         self.velocity=[0,0]
         self.bullets=[]
@@ -154,7 +156,7 @@ class App:
 
             self.score=score() #Le score
 
-            self.background= pygame.image.load('cdd-fond-décran.jpg')
+            self.background= pygame.image.load('praa.svg')
 
         
         
@@ -244,6 +246,7 @@ class App:
                     self.groupe.bullets.remove(bullet)
                     bullets_e_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
                     self.game=False
+                    print('bob touch')
 
         # Supprimez les balles de la liste originale
         for bullet in bullets_e_to_remove:
@@ -352,18 +355,6 @@ appli=App() #Je définie mon application, avec une valeur de vitesse
 
 
 key_events = []  # Liste pour stocker les événements clavier
-
-perso = image.load('bobsp.svg')
-
-
-imageSprite = {K_DOWN:[perso.subsurface(x,0,96,96)for x in range(0,384,96)],
-               K_LEFT:[perso.subsurface(x,96,96,96)for x in range(0,384,96)],
-               K_RIGHT:[perso.subsurface(x,192,96,96)for x in range(0,384,96)],
-               K_UP:[perso.subsurface(x,288,96,96)for x in range(0,384,96)]}
- 
-
- 
-
 
 etat = 0
 
