@@ -356,10 +356,7 @@ key_events = []  # Liste pour stocker les événements clavier
 perso = image.load('bobsp.svg')
 
 
-imageSprite = {K_DOWN:[perso.subsurface(x,0,96,96)for x in range(0,384,96)],
-               K_LEFT:[perso.subsurface(x,96,96,96)for x in range(0,384,96)],
-               K_RIGHT:[perso.subsurface(x,192,96,96)for x in range(0,384,96)],
-               K_UP:[perso.subsurface(x,288,96,96)for x in range(0,384,96)]}
+
  
 
  
