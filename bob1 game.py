@@ -49,10 +49,17 @@ class Ship:
 
 class Bullet:
     def __init__(self, ship, x, y): #J'initialise mon 'Bullet'
-        self.sprite=pygame.image.load("bull.svg") #Son sprite
-        self.rect= self.sprite.get_rect(x=x, y=y)
+        self.perso=pygame.image.load("bull.svg") #Son sprite
+        self.rect= self.perso.get_rect(x=x, y=y)
+        self.perso=pygame.image.load("bp.svg")
+
+        self.sprite=[self.perso.subsurface((x%4)*96,(x//4)*96,96,96)for x in range(16)]
+        self.ref=pygame.image.load("bull.svg")
         self.speed=5
         self.velocity=[0,0]
+        self.index = 0
+
+         
 
     def move(self):
         self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
@@ -61,7 +68,7 @@ class Bullet:
         """
             Affichage du missile
         """
-        screen.blit(self.sprite, self.rect)
+        screen.blit(self.sprite[self.index], self.rect)
 
     
 class enemie:
@@ -212,6 +219,7 @@ class App:
         for bullet in self.ship.bullets:
             bullet.velocity[1] = -1 
             bullet.move()
+            bullet.index= (bullet.index +1)%(len(bullet.sprite))
 
             # Vérifier les collisions entre les lasers et les ennemis
             for enemy in self.groupe.band:
@@ -274,7 +282,7 @@ class App:
                     
                 
         # Supprimez les lasers qui ont quitté l'écran
-        self.ship.bullets = [bullet for bullet in self.ship.bullets if bullet.rect.y > -bullet.sprite.get_height()]
+        self.ship.bullets = [bullet for bullet in self.ship.bullets if bullet.rect.y > -bullet.ref.get_height()]
 
         # self.groupe.bullets = [bullet for bullet in self.groupe.bullets if bullet.rect.y > bullet.sprite.get_height()]
 
