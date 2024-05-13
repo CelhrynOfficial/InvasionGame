@@ -17,6 +17,9 @@ init()"""
 
 class Ship:
     def __init__(self, x, y):
+
+        self.perso= image.load('bob4.svg')
+        self.rect= self.perso.get_rect(x=x, y=y)
         self.perso = image.load('bobsp.svg')
 
 
@@ -25,7 +28,7 @@ class Ship:
                     K_RIGHT:[self.perso.subsurface(x,192,96,96)for x in range(0,384,96)],
                     K_UP:[self.perso.subsurface(x,288,96,96)for x in range(0,384,96)]}
         
-        self.rect= self.perso.get_rect(x=x, y=y)
+        
         self.speed=1
         self.velocity=[0,0]
         self.bullets=[]
