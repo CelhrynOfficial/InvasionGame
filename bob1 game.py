@@ -20,7 +20,7 @@ class Ship:
 
         self.perso= image.load('bob4.svg')
         self.rect= self.perso.get_rect(x=x, y=y)
-        self.perso = image.load('spbobo.svg')
+        self.perso = image.load('bobsp.svg')
 
 
         self.sprite = {K_DOWN:[self.perso.subsurface(x,0,96,96)for x in range(0,384,96)],
@@ -55,7 +55,7 @@ class Bullet:
 
         self.sprite=[self.perso.subsurface((x%4)*64,(x//4)*64,64,64)for x in range(16)]
         self.ref=pygame.image.load("bull.svg")
-        self.speed=5
+        self.speed=4
         self.velocity=[0,0]
         self.index = 0
 
