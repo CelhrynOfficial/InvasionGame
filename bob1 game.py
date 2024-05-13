@@ -381,6 +381,7 @@ while appli.game==True:  # Boucle principale du jeu
         
         # Stockez les événements clavier
         if event.type in [pygame.KEYDOWN, pygame.KEYUP]:
+            
             key_events.append(event)
 
     if etat==0:
@@ -388,7 +389,9 @@ while appli.game==True:  # Boucle principale du jeu
         text = fonte.render('Appuyer sur ENTER', True, (0, 255, 0), (0, 5, 255))
         screen.fill((255,255,0))
         screen.blit(text, (20, 20))
-        if pygame.K_RETURN in key_events:
+        pygame.display.flip()
+        k = key.get_pressed()
+        if k[K_RETURN]:
             print("i")
             etat=1
 
@@ -407,4 +410,4 @@ while appli.game==True:  # Boucle principale du jeu
    
     
     
-    key_events.clear()  # Nettoyez la liste des événements clavier après les avoir traités
+        key_events.clear()  # Nettoyez la liste des événements clavier après les avoir traités
