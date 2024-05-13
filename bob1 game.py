@@ -154,7 +154,7 @@ class App:
 
             self.score=score() #Le score
 
-            self.background= pygame.image.load('cdd-fond-décran.jpg')
+            self.background= pygame.image.load('prii.jpg')
 
         
         
