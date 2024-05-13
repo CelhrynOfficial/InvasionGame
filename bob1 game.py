@@ -17,17 +17,26 @@ init()"""
 
 class Ship:
     def __init__(self, x, y):
-        self.sprite = pygame.image.load("bobsp.svg")
-        self.rect= self.sprite.get_rect(x=x, y=y)
+        self.perso = image.load('bobsp.svg')
+
+
+        self.sprite = {K_DOWN:[self.perso.subsurface(x,0,96,96)for x in range(0,384,96)],
+                    K_LEFT:[self.perso.subsurface(x,96,96,96)for x in range(0,384,96)],
+                    K_RIGHT:[self.perso.subsurface(x,192,96,96)for x in range(0,384,96)],
+                    K_UP:[self.perso.subsurface(x,288,96,96)for x in range(0,384,96)]}
+        
+        self.rect= self.perso.get_rect(x=x, y=y)
         self.speed=1
         self.velocity=[0,0]
         self.bullets=[]
+        self.direction=K_DOWN
+        self.index=0
 
     def move(self):
         self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
 
     def draw(self):
-        screen.blit(self.sprite, self.rect)
+        screen.blit(self.sprite[self.direction][self.index], self.rect)
 
     def shot(self):
         x=self.rect.x
@@ -166,10 +175,16 @@ class App:
         # Déplacez le vaisseau
         if pygame.K_LEFT in self.pressed_keys:
             self.ship.velocity[0]=-1
+            self.ship.direction = K_LEFT
+            self.ship.index = (self.ship.index+1)%4
         elif pygame.K_RIGHT in self.pressed_keys:
             self.ship.velocity[0]=1
+            self.ship.direction = K_RIGHT
+            self.ship.index = (self.ship.index+1)%4
         else:
             self.ship.velocity[0]=0
+            self.ship.direction = K_DOWN
+            self.ship.index = 0
 
         infoObject = pygame.display.Info()
         w=infoObject.current_w #Cette variable me permet de faire un écran traversable par les bords

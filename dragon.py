@@ -5,7 +5,7 @@ display.set_caption('Tutoriel pygame')
 init()
  
 #les images
-fond = image.load('prii.jpg')
+fond = image.load('praa.svg')
 fond = fond.convert()
  
 #les spritesheets
