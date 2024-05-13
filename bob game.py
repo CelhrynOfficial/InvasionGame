@@ -137,6 +137,8 @@ class App:
             self.score=score() #Le score
 
             self.background= pygame.image.load('cdd-fond-décran.jpg')
+            self.rect = self.background.get_rect()
+            self.rect = self.rect.move((x, y))
 
         
         
