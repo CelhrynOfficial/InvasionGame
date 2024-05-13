@@ -2,57 +2,100 @@ import pygame
 from pygame.locals import *
 import sys
 import time 
+import asyncio
 import socket
 
+async def handle_client(reader, writer):
+    client_address = writer.get_extra_info('peername')
+    print(f"Connection from {client_address}")
 
-def server_program():
-    # get the hostname
+    try:
+        while True:
+            data = await reader.read(1024)
+            if not data:
+                print(f"Client {client_address} disconnected")
+                break
+            message = data.decode()
+            print(f"Received {message!r} from {client_address}")
+            writer.write(data)
+            await writer.drain()
+
+            # Attendre la nouvelle entrée du client avant de lire à nouveau
+            message = await async_input(' -> ')
+            writer.write(message.encode())
+            await writer.drain()
+
+    except Exception as e:
+        print(f"Error with client {client_address}: {e}")
+
+    writer.close()
+
+async def async_input(prompt):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, input, prompt)
+
+async def server_program():
     host = socket.gethostname()
-    port = 5000  # initiate port no above 1024
+    port = 5000
 
-    server_socket = socket.socket()  # get instance
-    # look closely. The bind() function takes tuple as argument
-    server_socket.bind((host, port))  # bind host address and port together
+    server = await asyncio.start_server(
+        handle_client, host, port)
 
-    # configure how many client the server can listen simultaneously
-    server_socket.listen(2)
-    conn, address = server_socket.accept()  # accept new connection
-    print("Connection from: " + str(address))
-    while True:
-        # receive data stream. it won't accept data packet greater than 1024 bytes
-        data = conn.recv(1024).decode()
-        if not data:
-            # if data is not received break
-            break
-        print("from connected user: " + str(data))
-        data = input(' -> ')
-        conn.send(data.encode())  # send data to the client
+    addr = server.sockets[0].getsockname()
+    print(f'Serving on {addr}')
 
-    conn.close()  # close the connection
+    async with server:
+        await server.serve_forever()
 
-def client_program():
-    host = socket.gethostname()  # as both code is running on same pc
-    port = 5000  # socket server port number
+async def client_program():
+    host = socket.gethostname()
+    port = 5000
 
-    client_socket = socket.socket()  # instantiate
-    client_socket.connect((host, port))  # connect to the server
+    reader, writer = await asyncio.open_connection(
+        host, port)
 
-    message = input(" -> ")  # take input
-
-    while message.lower().strip() != 'bye':
-        client_socket.send(message.encode())  # send message
-        data = client_socket.recv(1024).decode()  # receive response
-
-        print('Received from server: ' + data)  # show in terminal
-
-        message = input(" -> ")  # again take input
-
-    client_socket.close()  # close the connection
+    try:
+        while True:
+            data = await reader.read(1024)
+            if not data:
+                print("Server disconnected")
+                break
+            message = data.decode()
+            input = message
+            print(f'Reçu: {input!r}')
 
 
+            message = input(" -> ")
+            writer.write(message.encode())
+            await writer.drain()
 
-#choix serveur ou client
-def choiceMode():
+    except Exception as e:
+        print(f"Error with client: {e}")
+
+    writer.close()
+
+async def main():
+    try:
+        choice = input("Serveur (1) ou client (0)? : ")
+        if choice == "1":
+            server_task = asyncio.create_task(server_program())
+            await server_task
+        elif choice == "0":
+            client_task = asyncio.create_task(client_program())
+            await client_task
+        else:
+            raise ValueError("Veuillez entrer 0 ou 1.")
+    except Exception as e:
+        print("Une erreur est survenue:", str(e))
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
     try:
         choice = input("Serveur (1) ou client (0)? : ")
         if choice == "1":
@@ -68,6 +111,8 @@ def choiceMode():
         choiceMode()
 
 def start_game(server=False):
+    BASE_WIDTH, BASE_HEIGHT = 800, 600
+    screen = pygame.display.set_mode((BASE_WIDTH, BASE_HEIGHT), RESIZABLE)
     # Définition des couleurs
     WHITE = (255, 255, 255)
 
