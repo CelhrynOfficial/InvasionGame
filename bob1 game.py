@@ -51,7 +51,7 @@ class Bullet:
     def __init__(self, ship, x, y): #J'initialise mon 'Bullet'
         self.perso=pygame.image.load("bull.svg") #Son sprite
         self.rect= self.perso.get_rect(x=x, y=y)
-        self.perso=pygame.image.load("bp.svg")
+        self.perso=pygame.image.load("bslp.png")
 
         self.sprite=[self.perso.subsurface((x%4)*96,(x//4)*96,96,96)for x in range(16)]
         self.ref=pygame.image.load("bull.svg")
