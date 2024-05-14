@@ -55,7 +55,7 @@ class Bullet:
 
         self.sprite=[self.perso.subsurface((x%4)*64,(x//4)*64,64,64)for x in range(16)]
         self.ref=pygame.image.load("bull.svg")
-        self.speed=4
+        self.speed=3
         self.velocity=[0,0]
         self.index = 0
 
