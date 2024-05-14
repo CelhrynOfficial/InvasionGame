@@ -5,22 +5,12 @@ import sys
 import time 
 import random
 
-"""fenetre = display.set_mode((1366,768))
-display.set_caption('Tutoriel pygame')
-init()"""
-
- 
-
-    
-    
-
-
 class Ship:
     def __init__(self, x, y):
 
-        self.perso= image.load('bob4.svg')
+        self.perso= image.load('bob4.svg') #J'utilise cette image comme reference pour ma hit box
         self.rect= self.perso.get_rect(x=x, y=y)
-        self.perso = image.load('spbobo.svg')
+        self.perso = image.load('spbobo.svg') #Puis j'utilise le sprite shite et le divise en sprite
 
 
         self.sprite = {K_DOWN:[self.perso.subsurface(x,0,96,96)for x in range(0,384,96)],
