@@ -1,114 +1,62 @@
+import random
 import pygame
 from pygame.locals import *
 import sys
 import time 
 import asyncio
 import socket
-
-async def handle_client(reader, writer):
-    client_address = writer.get_extra_info('peername')
-    print(f"Connection from {client_address}")
-
-    try:
-        while True:
-            data = await reader.read(1024)
-            if not data:
-                print(f"Client {client_address} disconnected")
-                break
-            message = data.decode()
-            print(f"Received {message!r} from {client_address}")
-            writer.write(data)
-            await writer.drain()
-
-            # Attendre la nouvelle entrée du client avant de lire à nouveau
-            message = await async_input(' -> ')
-            writer.write(message.encode())
-            await writer.drain()
-
-    except Exception as e:
-        print(f"Error with client {client_address}: {e}")
-
-    writer.close()
-
-async def async_input(prompt):
-    loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(None, input, prompt)
-
-async def server_program():
-    host = socket.gethostname()
-    port = 5000
-
-    server = await asyncio.start_server(
-        handle_client, host, port)
-
-    addr = server.sockets[0].getsockname()
-    print(f'Serving on {addr}')
-
-    async with server:
-        await server.serve_forever()
-
-async def client_program():
-    host = socket.gethostname()
-    port = 5000
-
-    reader, writer = await asyncio.open_connection(
-        host, port)
-
-    try:
-        while True:
-            data = await reader.read(1024)
-            if not data:
-                print("Server disconnected")
-                break
-            message = data.decode()
-            input = message
-            print(f'Reçu: {input!r}')
+import json
 
 
-            message = input(" -> ")
-            writer.write(message.encode())
-            await writer.drain()
+class GameClient:
+    def __init__(self, player="Default", server=("127.0.0.1", 12000)):
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.client_socket.settimeout(0.1)
+        self.server = server
+        self.player = player
 
-    except Exception as e:
-        print(f"Error with client: {e}")
+    def send_message(self, msg):
+        """ JSON-encode and send msg to server. """
+        message = json.dumps(msg).encode("utf8")
+        self.client_socket.sendto(message, self.server)
 
-    writer.close()
+    def check_message(self):
+        """ Check if there's a message from the server and return it, or None. """
+        try:
+            message, address = self.client_socket.recvfrom(1024)
+            return json.loads(message.decode("utf8"))
+        except socket.timeout:
+            pass  # this passes as "non-blocking" for now
+        return None
+    
+def game(player):
+    me = GameClient()
+    positions = {}
+    my_x = my_y = 0
+    me.send_message({player: [my_x, my_y]})
+    while True:
+        move = random.randrange(80)
+        if move == 0:
+            my_x -= 1
+        elif move == 1:
+            my_x += 1
+        elif move == 2:
+            my_y -= 1
+        elif move == 3:
+            my_y += 1
+        if move < 4:
+            me.send_message({player: [my_x, my_y]})
+            print("me: {}".format([my_x, my_y]))
+        updates = me.check_message()
+        while updates:
+            positions.update(updates)
+            print("updates: {}".format(updates))
+            print("positions: {}".format(positions))
+            updates = me.check_message()
+        time.sleep(0.1)
 
-async def main():
-    try:
-        choice = input("Serveur (1) ou client (0)? : ")
-        if choice == "1":
-            server_task = asyncio.create_task(server_program())
-            await server_task
-        elif choice == "0":
-            client_task = asyncio.create_task(client_program())
-            await client_task
-        else:
-            raise ValueError("Veuillez entrer 0 ou 1.")
-    except Exception as e:
-        print("Une erreur est survenue:", str(e))
-
-if __name__ == "__main__":
-    asyncio.run(main())
-
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
-
-    try:
-        choice = input("Serveur (1) ou client (0)? : ")
-        if choice == "1":
-            server_program()
-            start_game(server=True)
-        elif choice == "0":
-            client_program()
-            start_game(server=False)
-        else:
-            raise ValueError("Veuillez entrer 0 ou 1.")
-    except Exception as e:
-        print("Une erreur est survenue:", str(e))
-        choiceMode()
+namePlayer = input("Nom : ")
+game(namePlayer)
 
 def start_game(server=False):
     BASE_WIDTH, BASE_HEIGHT = 800, 600
@@ -150,7 +98,7 @@ def start_game(server=False):
 
     pygame.quit()
 
-choiceMode()
+main()
 
 class Ship:
     def __init__(self, x, y):
@@ -261,170 +209,60 @@ class score:
         
 class App:
     def __init__(self, speed=1):
-        screen.blit(background, (0, 0))
+        self.screen = pygame.display.set_mode((800, 600))
+        self.clock = pygame.time.Clock()
 
-        self.ship = Ship(infoObject.current_w-(infoObject.current_w / 4) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
-        self.ship.speed = speed*2.2  # Création du vaisseau
+        self.ship1_client = GameClient("player1")
+        self.ship2_client = GameClient("player2")
 
-        self.ship2 = Ship((infoObject.current_w / 4) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
-        self.ship2.speed = speed*2.2  # Création du vaisseau
+        self.ship1_position = [100, 300]
+        self.ship2_position = [700, 300]
 
-        self.pressed_keys = []  # Liste pour stocker les touches enfoncées
+        self.speed = speed
+        self.ship_speed = speed * 2.2
 
-        self.timel = 0  # Variables me permettant de gérer l'envoie des laser
-        self.timerl = 0
+    def update(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
 
-        self.timel_ship2 = 0  # Variable pour gérer le délai entre les tirs de ship2
-        self.timerl_ship2 = 0  # Variable pour gérer le délai entre les tirs de ship2
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            self.ship1_position[0] -= self.ship_speed
+        if keys[pygame.K_RIGHT]:
+            self.ship1_position[0] += self.ship_speed
+        if keys[pygame.K_UP]:
+            self.ship1_position[1] -= self.ship_speed
+        if keys[pygame.K_DOWN]:
+            self.ship1_position[1] += self.ship_speed
 
-        self.groupe = band()  # Je crée les enemies
+        if keys[pygame.K_a]:
+            self.ship2_position[0] -= self.ship_speed
+        if keys[pygame.K_d]:
+            self.ship2_position[0] += self.ship_speed
+        if keys[pygame.K_w]:
+            self.ship2_position[1] -= self.ship_speed
+        if keys[pygame.K_s]:
+            self.ship2_position[1] += self.ship_speed
 
-        self.tog = time.time()  # Variable me permettant de gérer le changement de vitesse des enemies
-        self.anctog = time.time()
+        self.ship1_client.send_message({"position": self.ship1_position})
+        self.ship2_client.send_message({"position": self.ship2_position})
 
-        self.score = score()  # Le score
+        ship1_updates = self.ship1_client.check_message()
+        if ship1_updates:
+            self.ship1_position = ship1_updates.get("position", self.ship1_position)
 
+        ship2_updates = self.ship2_client.check_message()
+        if ship2_updates:
+            self.ship2_position = ship2_updates.get("position", self.ship2_position)
 
+        self.screen.fill((0, 0, 0))
+        pygame.draw.rect(self.screen, (255, 0, 0), (*self.ship1_position, 50, 50))
+        pygame.draw.rect(self.screen, (0, 0, 255), (*self.ship2_position, 50, 50))
 
-    def update(self, key_events):
-        for event in key_events:
-            if event.type == pygame.KEYDOWN:
-                if event.key not in self.pressed_keys:
-                    self.pressed_keys.append(event.key)
-            elif event.type == pygame.KEYUP:
-                if event.key in self.pressed_keys:
-                    self.pressed_keys.remove(event.key)
-
-        # Déplacez le vaisseau
-        if pygame.K_LEFT in self.pressed_keys:
-            self.ship.velocity[0]=-1
-        elif pygame.K_RIGHT in self.pressed_keys:
-            self.ship.velocity[0]=1
-        
-        else:
-            self.ship.velocity[0]=0
-
-        if pygame.K_q in self.pressed_keys:
-            self.ship2.velocity[0]=-1
-        elif pygame.K_d in self.pressed_keys:
-            self.ship2.velocity[0]=1
-        else:
-            self.ship2.velocity[0]=0
-        
-
-        infoObject = pygame.display.Info()
-        w=infoObject.current_w #Cette variable me permet de faire un écran traversable par les bords
-
-        if self.ship.rect.x== w:
-            self.ship.rect.x=0
-        elif self.ship.rect.x==0:
-            self.ship.rect.x=w
-        
-        if self.ship2.rect.x== w:
-            self.ship2.rect.x=0
-        elif self.ship2.rect.x==0:
-            self.ship2.rect.x=w
-
-        self.ship.move()
-        self.ship2.move()
-
-        # Faire tirer ship1
-        if pygame.K_SPACE in self.pressed_keys:
-            self.timerl = time.time()
-            if self.timerl - self.timel >= 0.5:
-                self.ship.shot()
-                self.timel = self.timerl
-        
-        # Faire tirer ship2
-        if pygame.K_z in self.pressed_keys:
-            self.timerl_ship2 = time.time()
-            if self.timerl_ship2 - self.timel_ship2 >= 0.5:
-                self.ship2.shot()  # Supprimer l'argument de la méthode shot()
-                self.timel_ship2 = self.timerl_ship2
-        
-                
-       # Mettez à jour la position de tous les lasers
-        bullets_to_remove = []  # Liste temporaire pour stocker les balles à supprimer
-        for bullet in self.ship.bullets:
-            bullet.velocity[1] = -1 
-            bullet.move()
-            # Vérifier les collisions entre les lasers et les ennemis
-            for enemy in self.groupe.band:
-                if bullet.rect.colliderect(enemy.rect):
-                    self.groupe.band.remove(enemy)
-                    bullets_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
-                    self.score.score= self.score.score+100 #Si un ennemei est detruit je rajoue 100 points à mon score
-                    self.groupe.add()
-        # Mettez à jour la position de tous les lasers
-        bullets_to_remove2 = []  # Liste temporaire pour stocker les balles à supprimer
-        for bullet in self.ship2.bullets:
-            bullet.velocity[1] = -1 
-            bullet.move()
-
-            # Vérifier les collisions entre les lasers et les ennemis
-            for enemy in self.groupe.band:
-                if bullet.rect.colliderect(enemy.rect):
-                    self.groupe.band.remove(enemy)
-                    bullets_to_remove2.append(bullet)  # Ajoutez la balle à la liste temporaire
-                    self.score.score= self.score.score+100 #Si un ennemei est detruit je rajoue 100 points à mon score
-                    self.groupe.add()
-
-        # Supprimez les balles de la liste originale
-        for bullet in bullets_to_remove:
-            if bullet in self.ship.bullets:  # Vérifiez si la balle est toujours dans la liste
-                self.ship.bullets.remove(bullet)
-        # Supprimez les balles de la liste originale
-        for bullet in bullets_to_remove2:
-            if bullet in self.ship.bullets:  # Vérifiez si la balle est toujours dans la liste
-                self.ship2.bullets.remove(bullet)
-
-
-
-        # Mettre à jour la position des enemies
-        for enemie in self.groupe.band:
-            
-            infoObject = pygame.display.Info()
-            w = infoObject.current_w  # Cette variable me permet de faire faire des tours d'écrans aux enemis
-
-            # Faire descendre les ennemis lorsqu'ils atteignent le bord de l'écran
-            if enemie.rect.left < 0 or enemie.rect.right > w:
-                enemie.velocity[0] = -enemie.velocity[0]  # Supprimer la multiplication par enemie.speed
-                enemie.velocity[1] = 20  # Faire descendre les ennemis
-
-            enemie.move()  # Je fais bouger le mob
-            enemie.velocity[1] = 0  # Réinitialiser la vitesse verticale après le mouvement
-
-
-                    
-                
-        # Supprimez les lasers qui ont quitté l'écran
-        self.ship.bullets = [bullet for bullet in self.ship.bullets if bullet.rect.y > -bullet.sprite.get_height()]
-
-        #Maintenir le vaisseau en bas de l'écran
-        infoObject = pygame.display.Info()
-        self.ship.rect.y= (infoObject.current_h - (infoObject.current_h)/20)-65
-
-        #Changer la vitesse des ennemis, toute les 30 seconde
-
-        self.tog=time.time() #J'enregiste le temps du jeu
-        
-        
-        if self.tog - self.anctog >=15: #Si la difference entre le moment actuel et le dernier moment de modification est plus que 10 sec, je modifie la vitesse 
-            x=2 #Ici x represente la limite de vitesse
-            
-            if self.groupe.speed>=x:#Si la limite est depasser, je remet ma vitesse à sa limite
-                self.groupe.speed=x
-            else:
-                self.groupe.speed=self.groupe.speed*1.3 #Sinon je rajoute la moitié de la vitesse actuel
-                if self.groupe.speed>=x: #Si la limite est depasser, je remet ma vitesse à sa limite
-                    self.groupe.speed=x
-
-            for enemie in self.groupe.band:  #Et je l'applique à ton mon groupe
-                    enemie.speed=self.groupe.speed
-            
-            self.anctog=self.tog #Je change la valeur du dernier moment de modification
-
-
+        pygame.display.flip()
+        self.clock.tick(60)
         
         
         
@@ -463,11 +301,9 @@ appli=App() #Je définie mon application, avec une valeur de vitesse
 
 key_events = []  # Liste pour stocker les événements clavier
 
-game=True
 
-
-while game==True:  # Boucle principale du jeu
-
+if __name__ == "__main__":
+    pygame.init()
     for event in pygame.event.get():  # Récupère tous les événements pygame
         if event.type == pygame.QUIT:
             sys.exit()
@@ -489,3 +325,7 @@ while game==True:  # Boucle principale du jeu
     
     
     key_events.clear()  # Nettoyez la liste des événements clavier après les avoir traités
+    while True:
+        appli.update()
+
+
