@@ -138,7 +138,7 @@ class App:
 
             self.background= pygame.image.load('cdd-fond-décran.jpg')
             self.rect = self.background.get_rect()
-            
+             
 
         
         
