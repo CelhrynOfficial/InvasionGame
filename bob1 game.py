@@ -17,7 +17,10 @@ init()"""
 
 class Ship:
     def __init__(self, x, y):
-        self.perso = image.load('bobsp.svg')
+
+        self.perso= image.load('bob4.svg')
+        self.rect= self.perso.get_rect(x=x, y=y)
+        self.perso = image.load('spbobo.svg')
 
 
         self.sprite = {K_DOWN:[self.perso.subsurface(x,0,96,96)for x in range(0,384,96)],
@@ -25,7 +28,7 @@ class Ship:
                     K_RIGHT:[self.perso.subsurface(x,192,96,96)for x in range(0,384,96)],
                     K_UP:[self.perso.subsurface(x,288,96,96)for x in range(0,384,96)]}
         
-        self.rect= self.perso.get_rect(x=x, y=y)
+        
         self.speed=1
         self.velocity=[0,0]
         self.bullets=[]
@@ -46,10 +49,17 @@ class Ship:
 
 class Bullet:
     def __init__(self, ship, x, y): #J'initialise mon 'Bullet'
-        self.sprite=pygame.image.load("bull.svg") #Son sprite
-        self.rect= self.sprite.get_rect(x=x, y=y)
-        self.speed=5
+        self.perso=pygame.image.load("bull.svg") #Son sprite
+        self.rect= self.perso.get_rect(x=x, y=y)
+        self.perso=pygame.image.load("spbl.png")
+
+        self.sprite=[self.perso.subsurface((x%4)*64,(x//4)*64,64,64)for x in range(16)]
+        self.ref=pygame.image.load("bull.svg")
+        self.speed=4
         self.velocity=[0,0]
+        self.index = 0
+
+         
 
     def move(self):
         self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
@@ -58,7 +68,7 @@ class Bullet:
         """
             Affichage du missile
         """
-        screen.blit(self.sprite, self.rect)
+        screen.blit(self.sprite[self.index], self.rect)
 
     
 class enemie:
@@ -154,7 +164,7 @@ class App:
 
             self.score=score() #Le score
 
-            self.background= pygame.image.load('cdd-fond-décran.jpg')
+            self.background= pygame.image.load('prii.jpg')
 
         
         
@@ -177,6 +187,7 @@ class App:
             self.ship.velocity[0]=-1
             self.ship.direction = K_LEFT
             self.ship.index = (self.ship.index+1)%4
+            
         elif pygame.K_RIGHT in self.pressed_keys:
             self.ship.velocity[0]=1
             self.ship.direction = K_RIGHT
@@ -209,6 +220,7 @@ class App:
         for bullet in self.ship.bullets:
             bullet.velocity[1] = -1 
             bullet.move()
+            bullet.index= (bullet.index +1)%(len(bullet.sprite))
 
             # Vérifier les collisions entre les lasers et les ennemis
             for enemy in self.groupe.band:
@@ -271,7 +283,7 @@ class App:
                     
                 
         # Supprimez les lasers qui ont quitté l'écran
-        self.ship.bullets = [bullet for bullet in self.ship.bullets if bullet.rect.y > -bullet.sprite.get_height()]
+        self.ship.bullets = [bullet for bullet in self.ship.bullets if bullet.rect.y > -bullet.ref.get_height()]
 
         # self.groupe.bullets = [bullet for bullet in self.groupe.bullets if bullet.rect.y > bullet.sprite.get_height()]
 
@@ -355,17 +367,12 @@ key_events = []  # Liste pour stocker les événements clavier
 
 perso = image.load('bobsp.svg')
 
-
-imageSprite = {K_DOWN:[perso.subsurface(x,0,96,96)for x in range(0,384,96)],
-               K_LEFT:[perso.subsurface(x,96,96,96)for x in range(0,384,96)],
-               K_RIGHT:[perso.subsurface(x,192,96,96)for x in range(0,384,96)],
-               K_UP:[perso.subsurface(x,288,96,96)for x in range(0,384,96)]}
- 
-
- 
-
-
 etat = 0
+
+bob_code=0
+
+timel=0 
+timerl=0
 
 while appli.game==True:  # Boucle principale du jeu
 
@@ -398,9 +405,61 @@ while appli.game==True:  # Boucle principale du jeu
             if enemis.rect.y>= appli.ship.rect.y:
                 appli.game=False
 
+    timerl=time.time()
 
+    if timerl-timel>=0.2: #Cette conditionelle empeche de tirer le missile trop vite
+                
+        timel=timerl
+        k = key.get_pressed()
+        if k[K_UP]:
+            if bob_code==0 or bob_code==1:
+                bob_code+=1
+                print(bob_code)
+            else:
+                bob_code=0
+           
+        if k[K_DOWN]:
+            if bob_code==2 or bob_code==3:
+                bob_code+=1
+                print(bob_code)
+            else:
+                bob_code=0
+     
+        if k[K_LEFT]:
+            if bob_code==4 or bob_code==6:
+                bob_code+=1
+                print(bob_code)
+            else:
+                bob_code=0
+                
+        if k[K_RIGHT]:
+            if bob_code==5 or bob_code==7:
+                bob_code+=1
+                print(bob_code)
+            else:
+                bob_code=0
+                
+        if k[K_b]:
+            if bob_code==8:
+                bob_code+=1
+                print(bob_code)
+            else:
+                bob_code=0
+                
+        if k[K_a]:
+            if bob_code==9:
+                bob_code+=1
+                print(bob_code)
+            else:
+                bob_code=0
+                
+        
+
+    if bob_code==10:
+        print("Bob mode activé")
+        bob_code=11
     
    
     
     
-        key_events.clear()  # Nettoyez la liste des événements clavier après les avoir traités
+    key_events.clear()  # Nettoyez la liste des événements clavier après les avoir traités
