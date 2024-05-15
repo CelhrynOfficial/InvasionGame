@@ -10,7 +10,7 @@ class Ship:
 
         self.perso= image.load('bob4.svg') #J'utilise cette image comme reference pour ma hit box
         self.rect= self.perso.get_rect(x=x, y=y)
-        self.perso = image.load('bp.svg') #Puis j'utilise le sprite shite et le divise en sprite
+        self.perso = image.load('spbobo.svg') #Puis j'utilise le sprite shite et le divise en sprite
 
 
         self.sprite = {K_DOWN:[self.perso.subsurface(x,0,96,96)for x in range(0,384,96)],
