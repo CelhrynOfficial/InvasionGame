@@ -13,10 +13,11 @@ class Ship:
         self.perso = image.load('spbobo.svg') #Puis j'utilise le sprite shite et le divise en sprite
 
 
-        self.sprite = {K_DOWN:[self.perso.subsurface(x,0,96,96)for x in range(0,384,96)],
+        self.sprite =  {K_DOWN:[self.perso.subsurface(x,0,96,96)for x in range(0,384,96)],
                     K_LEFT:[self.perso.subsurface(x,96,96,96)for x in range(0,384,96)],
                     K_RIGHT:[self.perso.subsurface(x,192,96,96)for x in range(0,384,96)],
                     K_UP:[self.perso.subsurface(x,288,96,96)for x in range(0,384,96)]}
+
         
         
         self.speed=1
@@ -37,6 +38,13 @@ class Ship:
         bullet = Bullet(self,x, y)  # Créez un nouveau laser
         self.bullets.append(bullet)  # Ajoutez le laser à la liste
 
+    def respirte(self, perso): #Je change le sprite de l'objet
+        self.perso=image.load(perso)
+        self.sprite=  {K_DOWN:[self.perso.subsurface(x,0,64,64)for x in range(0,256,64)],
+                    K_LEFT:[self.perso.subsurface(x,64,64,64)for x in range(0,256,64)],
+                    K_RIGHT:[self.perso.subsurface(x,128,64,64)for x in range(0,256,64)],
+                    K_UP:[self.perso.subsurface(x,192,64,64)for x in range(0,256,64)]}
+       
 class Bullet:
     def __init__(self, ship, x, y): #J'initialise mon 'Bullet'
         self.perso=pygame.image.load("bull.svg") #Son sprite
@@ -448,6 +456,7 @@ while appli.game==True:  # Boucle principale du jeu
     if bob_code==10:
         print("Bob mode activé")
         bob_code=11
+        appli.ship.respirte('spbl.png')
     
    
     
