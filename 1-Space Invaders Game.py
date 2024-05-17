@@ -20,7 +20,7 @@ class Ship:
 
         
         
-        self.speed=1
+        self.speed=2
         self.velocity=[0,0]
         self.bullets=[]
         self.direction=K_DOWN
@@ -174,6 +174,8 @@ class App:
 
             
 
+            
+
         
         
 
@@ -194,12 +196,14 @@ class App:
         if pygame.K_LEFT in self.pressed_keys:
             self.ship.velocity[0]=-1
             self.ship.direction = K_LEFT
-            self.ship.index = (self.ship.index+1)%4
+            if self.cycle%50==0:
+                self.ship.index = (self.ship.index+1)%4
             
         elif pygame.K_RIGHT in self.pressed_keys:
             self.ship.velocity[0]=1
             self.ship.direction = K_RIGHT
-            self.ship.index = (self.ship.index+1)%4
+            if self.cycle%50==0:
+                self.ship.index = (self.ship.index+1)%4
         else:
             self.ship.velocity[0]=0
             self.ship.direction = K_DOWN
@@ -249,6 +253,7 @@ class App:
 
         #Faire tirer les ennemis
         if self.cycle%200==0:
+            print(self.cycle)
             self.groupe.shot()
         
              
@@ -257,7 +262,10 @@ class App:
         for bullet in self.groupe.bullets:
             bullet.velocity[1] = 1 
             bullet.move()
-            bullet.index= (bullet.index +1)%(len(bullet.sprite))
+            
+            if self.cycle%10==0:
+                bullet.index= (bullet.index +1)%(len(bullet.sprite))
+                
 
             # Vérifier les collisions entre les lasers et le joueur
             for bullet in self.groupe.bullets:
@@ -392,10 +400,7 @@ mixer.music.play(-1)
     
 appli=App() #Je définie mon application, avec une valeur de vitesse
 
-
 key_events = []  # Liste pour stocker les événements clavier
-
-
 
 etat = 0
 
