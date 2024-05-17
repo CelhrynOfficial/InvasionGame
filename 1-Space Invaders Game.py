@@ -88,10 +88,16 @@ class enemie:
 
 class enemie_b:
     def __init__(self, x, y): #J'initialise mon 'Bullet' enemie
-        self.sprite=pygame.image.load("bull.svg") #Son sprite
-        self.rect= self.sprite.get_rect(x=x, y=y)
+        self.perso=pygame.image.load("bull.svg") #Son sprite
+        self.rect= self.perso.get_rect(x=x, y=y)
+        self.perso=pygame.image.load("ebsp.png")
+
+        self.sprite=[self.perso.subsurface((x%4)*64,(x//4)*64,64,64)for x in range(16)]
+        self.ref=pygame.image.load("bull.svg")
         self.speed=1
         self.velocity=[0,0]
+        self.index = 0
+
 
     def move(self):
         self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
@@ -100,7 +106,7 @@ class enemie_b:
         """
             Affichage du missile enemie
         """
-        screen.blit(self.sprite, self.rect)
+        screen.blit(self.sprite[self.index], self.rect)
 
 class band:
     def __init__(self):
@@ -249,6 +255,7 @@ class App:
         for bullet in self.groupe.bullets:
             bullet.velocity[1] = 1 
             bullet.move()
+            bullet.index= (bullet.index +1)%(len(bullet.sprite))
 
             # Vérifier les collisions entre les lasers et le joueur
             for bullet in self.groupe.bullets:
