@@ -457,6 +457,8 @@ while appli.game==True:  # Boucle principale du jeu
         print("Bob mode activé")
         bob_code=11
         appli.ship.respirte('spbl.png')
+
+    time.sleep(0.001)
     
    
     
