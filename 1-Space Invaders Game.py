@@ -255,7 +255,7 @@ class App:
                 if bullet.rect.colliderect(self.ship.rect):
                     self.groupe.bullets.remove(bullet)
                     bullets_e_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
-                    self.game=False
+                    self.gameover()
 
         # Supprimez les balles de la liste originale
         for bullet in bullets_e_to_remove:
@@ -343,6 +343,24 @@ class App:
 
         pygame.display.flip()  # J'affiche tous les sprites
 
+    def gameover(self):
+        while 1:
+            for event in pygame.event.get():  # Récupère tous les événements pygame
+                        if event.type == pygame.QUIT:
+                            sys.exit()
+
+            screen.fill((0, 0, 0))  # J'efface l'écran précédent
+            fonte = font.SysFont('Arial', 36)
+            infoObject = pygame.display.Info()
+            x=infoObject.current_w//2
+           
+            y=infoObject.current_h//2
+            text = fonte.render('Game Over', True, (255, 0, 0))
+            
+            screen.blit(self.background,(0,0))
+            screen.blit(text, (x-60,y-30))
+            pygame.display.flip()
+
 
 # Taille initiale de la fenêtre
 BASE_WIDTH, BASE_HEIGHT = 800, 600
@@ -375,7 +393,7 @@ timel=0
 timerl=0
 
 while appli.game==True:  # Boucle principale du jeu
-
+    
     for event in pygame.event.get():  # Récupère tous les événements pygame
         if event.type == pygame.QUIT:
             sys.exit()
@@ -403,7 +421,7 @@ while appli.game==True:  # Boucle principale du jeu
 
         for enemis in appli.groupe.band: #Si un enemies dépasse mon vaisseau, on arrete le jeu, le joueur à perdu
             if enemis.rect.y>= appli.ship.rect.y:
-                appli.game=False
+                appli.gameover()
 
     timerl=time.time()
 
