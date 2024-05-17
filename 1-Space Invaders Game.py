@@ -385,7 +385,10 @@ pygame.display.set_caption('Invaders') #Je choisi le nom de ma fenetre
 
 background = pygame.Surface(screen.get_size()) #Je crée mon fond d'écran 
 background = background.convert()
-  
+
+#background sound
+mixer.music.load('Under.wav')
+mixer.music.play(-1) 
     
 appli=App() #Je définie mon application, avec une valeur de vitesse
 
