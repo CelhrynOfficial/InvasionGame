@@ -164,6 +164,8 @@ class App:
 
             self.background= pygame.image.load('prairioo.png')
 
+            
+
         
         
 
