@@ -253,7 +253,6 @@ class App:
 
         #Faire tirer les ennemis
         if self.cycle%200==0:
-            print(self.cycle)
             self.groupe.shot()
         
              
