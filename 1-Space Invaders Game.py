@@ -162,7 +162,7 @@ class App:
 
             self.score=score() #Le score
 
-            self.background= pygame.image.load('prairioo.png')
+            self.background= pygame.image.load('prairioa.jpg')
 
             
 
@@ -295,10 +295,10 @@ class App:
 
         self.tog=time.time() #J'enregiste le temps du jeu
         
-        x=3 #Ici x represente la limite de vitesse
+        x=2 #Ici x represente la limite de vitesse
 
         if self.score.score>10000: #Si le joueur depasse le score de 10.000 point
-            x=4 #Je change la limite de vitesse
+            x=3 #Je change la limite de vitesse
             self.groupe.speed =x
             for enemie in self.groupe.band:  #Et je l'applique à ton mon groupe
                     enemie.speed=self.groupe.speed
@@ -386,7 +386,7 @@ while appli.game==True:  # Boucle principale du jeu
             key_events.append(event)
 
     if etat==0:
-        fonte = font.SysFont('comicsansms', 36)
+        fonte = font.SysFont('Arial', 36)
         text = fonte.render('Appuyer sur ENTER', True, (0, 255, 0), (0, 5, 255))
         screen.fill((255,255,0))
         screen.blit(text, (20, 20))
