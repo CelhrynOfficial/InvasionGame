@@ -167,7 +167,7 @@ class life:
 
 class score:
     def __init__(self):
-        self.score=14900
+        self.score=0
         self.font=pygame.font.Font(None, 24)
         
     
