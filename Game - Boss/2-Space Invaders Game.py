@@ -4,6 +4,7 @@ from pygame.locals import *
 import sys
 import time 
 import random
+import asyncio
 
 class Ship:
     def __init__(self, x, y):
@@ -491,107 +492,110 @@ background = background.convert()
 #background sound
 mixer.music.load('Under.wav')
 mixer.music.play(-1) 
-    
-appli=App() #Je définie mon application, avec une valeur de vitesse
+async def main():    
+    appli=App() #Je définie mon application, avec une valeur de vitesse
 
-key_events = []  # Liste pour stocker les événements clavier
+    key_events = []  # Liste pour stocker les événements clavier
 
-etat = 0
+    etat = 0
 
-bob_code=0
+    bob_code=0
 
-timel=0 
-timerl=0
+    timel=0 
+    timerl=0
 
-while appli.game==True:  # Boucle principale du jeu
-    
-    for event in pygame.event.get():  # Récupère tous les événements pygame
-        if event.type == pygame.QUIT:
-            sys.exit()
+    while appli.game==True:  # Boucle principale du jeu
         
-        # Stockez les événements clavier
-        if event.type in [pygame.KEYDOWN, pygame.KEYUP]:
+        for event in pygame.event.get():  # Récupère tous les événements pygame
+            if event.type == pygame.QUIT:
+                sys.exit()
             
-            key_events.append(event)
-
-    if etat==0:
-        fonte = font.SysFont('Arial', 36)
-        text = fonte.render('Appuyer sur ENTER', True, (0, 255, 0), (0, 5, 255))
-        screen.fill((255,255,0))
-        screen.blit(text, (20, 20))
-        pygame.display.flip()
-        k = key.get_pressed()
-        if k[K_RETURN]:
-            etat=1
-
-    if etat==1:
-        # Mettez à jour et dessinez le jeu
-        appli.update(key_events)
-        appli.draw()
-
-
-        for enemis in appli.groupe.band: #Si un enemies dépasse mon vaisseau, on arrete le jeu, le joueur à perdu
-            if enemis.rect.y>= appli.ship.rect.y:
-                appli.gameover()
-
-    timerl=time.time()
-
-    if timerl-timel>=0.2: #Cette conditionelle empeche de tirer le missile trop vite
+            # Stockez les événements clavier
+            if event.type in [pygame.KEYDOWN, pygame.KEYUP]:
                 
-        timel=timerl
-        k = key.get_pressed()
-        if k[K_UP]:
-            if bob_code==0 or bob_code==1:
-                bob_code+=1
-                print(bob_code)
-            else:
-                bob_code=0
-           
-        if k[K_DOWN]:
-            if bob_code==2 or bob_code==3:
-                bob_code+=1
-                print(bob_code)
-            else:
-                bob_code=0
-     
-        if k[K_LEFT]:
-            if bob_code==4 or bob_code==6:
-                bob_code+=1
-                print(bob_code)
-            else:
-                bob_code=0
-                
-        if k[K_RIGHT]:
-            if bob_code==5 or bob_code==7:
-                bob_code+=1
-                print(bob_code)
-            else:
-                bob_code=0
-                
-        if k[K_b]:
-            if bob_code==8:
-                bob_code+=1
-                print(bob_code)
-            else:
-                bob_code=0
-                
-        if k[K_a]:
-            if bob_code==9:
-                bob_code+=1
-                print(bob_code)
-            else:
-                bob_code=0
-                
+                key_events.append(event)
+
+        if etat==0:
+            fonte = font.SysFont('Arial', 36)
+            text = fonte.render('Appuyer sur ENTER', True, (0, 255, 0), (0, 5, 255))
+            screen.fill((255,255,0))
+            screen.blit(text, (20, 20))
+            pygame.display.flip()
+            k = key.get_pressed()
+            if k[K_RETURN]:
+                etat=1
+
+        if etat==1:
+            # Mettez à jour et dessinez le jeu
+            appli.update(key_events)
+            appli.draw()
+
+
+            for enemis in appli.groupe.band: #Si un enemies dépasse mon vaisseau, on arrete le jeu, le joueur à perdu
+                if enemis.rect.y>= appli.ship.rect.y:
+                    appli.gameover()
+
+        timerl=time.time()
+
+        if timerl-timel>=0.2: #Cette conditionelle empeche de tirer le missile trop vite
+                    
+            timel=timerl
+            k = key.get_pressed()
+            if k[K_UP]:
+                if bob_code==0 or bob_code==1:
+                    bob_code+=1
+                    print(bob_code)
+                else:
+                    bob_code=0
+            
+            if k[K_DOWN]:
+                if bob_code==2 or bob_code==3:
+                    bob_code+=1
+                    print(bob_code)
+                else:
+                    bob_code=0
         
+            if k[K_LEFT]:
+                if bob_code==4 or bob_code==6:
+                    bob_code+=1
+                    print(bob_code)
+                else:
+                    bob_code=0
+                    
+            if k[K_RIGHT]:
+                if bob_code==5 or bob_code==7:
+                    bob_code+=1
+                    print(bob_code)
+                else:
+                    bob_code=0
+                    
+            if k[K_b]:
+                if bob_code==8:
+                    bob_code+=1
+                    print(bob_code)
+                else:
+                    bob_code=0
+                    
+            if k[K_a]:
+                if bob_code==9:
+                    bob_code+=1
+                    print(bob_code)
+                else:
+                    bob_code=0
+                    
+            
 
-    if bob_code==10:
-        print("Bob mode activé")
-        bob_code=11
-        appli.ship.respirte('spbl.png')
+        if bob_code==10:
+            print("Bob mode activé")
+            bob_code=11
+            appli.ship.respirte('spbl.png')
 
-    time.sleep(0.001)
+        time.sleep(0.001)
+        
     
-   
-    
-    
-    key_events.clear()  # Nettoyez la liste des événements clavier après les avoir traités
+        
+        
+        key_events.clear()  # Nettoyez la liste des événements clavier après les avoir traités
+        await asyncio.sleep(0)
+
+asyncio.run(main())
