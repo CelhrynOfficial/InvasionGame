@@ -11,13 +11,13 @@ class Ship:
 
         self.perso= image.load('bob4.svg') #J'utilise cette image comme reference pour ma hit box
         self.rect= self.perso.get_rect(x=x, y=y)
-        self.perso = image.load('sritbob.png') #Puis j'utilise le sprite shite et le divise en sprite
+        self.perso = image.load('spritebobi.png') #Puis j'utilise le sprite shite et le divise en sprite
 
 
-        self.sprite=  {K_DOWN:[self.perso.subsurface(x,0,64,64)for x in range(0,256,64)],
-                    K_LEFT:[self.perso.subsurface(x,64,64,64)for x in range(0,256,64)],
-                    K_RIGHT:[self.perso.subsurface(x,128,64,64)for x in range(0,256,64)],
-                    K_UP:[self.perso.subsurface(x,192,64,64)for x in range(0,256,64)]}
+        self.sprite = {K_DOWN:[self.perso.subsurface(x,0,96,96)for x in range(0,384,96)],
+               K_LEFT:[self.perso.subsurface(x,96,96,96)for x in range(0,384,96)],
+               K_RIGHT:[self.perso.subsurface(x,192,96,96)for x in range(0,384,96)],
+               K_UP:[self.perso.subsurface(x,288,96,96)for x in range(0,384,96)]}
         
         
         self.speed=2
@@ -155,25 +155,25 @@ class Boss:
 class life:
     def __init__(self, lp):
         self.life=lp
-        self.font=pygame.font.Font(None, 24)
+        self.font=pygame.font.Font(None, 34)
         
     
     def draw(self):
         scr=str(self.life)
         txt="Life: "+ scr
-        text = self.font.render(txt,1,(255,0,255))
+        text = self.font.render(txt,1,(0,0,0))
         screen.blit(text, (700,0))
 
 class score:
     def __init__(self):
-        self.score=14900
-        self.font=pygame.font.Font(None, 24)
+        self.score=0
+        self.font=pygame.font.Font(None, 34)
         
     
     def draw(self):
         scr=str(self.score)
         txt="Score: "+ scr
-        text = self.font.render(txt,1,(255,0,255))
+        text = self.font.render(txt,1,(0,0,0))
         screen.blit(text, (0,0))
 
         
@@ -286,7 +286,7 @@ class App:
                         self.boss.life.life=self.boss.life.life-1
                         print(self.boss.life.life)
                         if self.boss.life.life==0:
-                            self.gameover()
+                            self.victory()
                         
 
       
@@ -467,6 +467,24 @@ class App:
            
             y=infoObject.current_h//2
             text = fonte.render('Game Over', True, (255, 0, 0))
+            
+            screen.blit(self.background,(0,0))
+            screen.blit(text, (x-60,y-30))
+            pygame.display.flip()
+
+    def victory(self):
+        while 1:
+            for event in pygame.event.get():  # Récupère tous les événements pygame
+                        if event.type == pygame.QUIT:
+                            sys.exit()
+
+            screen.fill((0, 0, 0))  # J'efface l'écran précédent
+            fonte = font.SysFont('Arial', 36)
+            infoObject = pygame.display.Info()
+            x=infoObject.current_w//2
+           
+            y=infoObject.current_h//2
+            text = fonte.render('You Win', True, (0, 255, 0))
             
             screen.blit(self.background,(0,0))
             screen.blit(text, (x-60,y-30))
