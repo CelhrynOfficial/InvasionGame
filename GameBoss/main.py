@@ -28,7 +28,7 @@ class Ship:
                K_UP:[self.perso.subsurface(x,288,96,96)for x in range(0,384,96)]}
         
         
-        self.speed=2
+        self.speed=10
         self.velocity=[0,0]
         self.bullets=[]
         self.direction=K_DOWN
@@ -192,7 +192,7 @@ class App:
             self.game=True
 
             self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
-            self.ship.speed=speed #Création du vaisseau
+            
 
             self.pressed_keys = []  # Liste pour stocker les touches enfoncées
 
@@ -533,6 +533,7 @@ async def main():
 
     timel=0 
     timerl=0
+    
 
     while appli.game==True:  # Boucle principale du jeu
         
@@ -546,16 +547,24 @@ async def main():
                 key_events.append(event)
 
         if etat==0:
-            fonte = font.SysFont('Arial', 36)
+            i=36
+            fonte = font.SysFont('Arial', i)
             text = fonte.render('Appuyer sur ENTER', True, (0, 255, 0), (0, 5, 255))
-            screen.fill((255,255,0))
-            screen.blit(text, (20, 20))
+            evan= fonte.render('Developeur Jeu: Evan Barbier Veillon', (0, 255, 0), (0, 5, 255))
+            bapt=fonte.render('Developeur Web: Baptiste Puaud', (0, 255, 0), (0, 5, 255))
+            lisa=fonte.render('Direction artistique: Lisa Barbeau', (0, 255, 0), (0, 5, 255))
+            screen.fill((255,255,255))
+            screen.blit(text, (20, 20+i))
+            screen.blit(evan, (20, 20+2*i))
+            screen.blit(bapt, (20, 20+3*i))
+            screen.blit(lisa, (20, 20+4*i))
+
             pygame.display.flip()
             k = key.get_pressed()
             if k[K_RETURN]:
                 etat=1
 
-        if etat==1:
+        if etat==1 :
             # Mettez à jour et dessinez le jeu
             appli.update(key_events)
             appli.draw()
