@@ -6,6 +6,14 @@ import time
 import random
 import asyncio
 
+#commande pour le son et bruitages
+pygame.init()
+pygame.mixer.init()
+bulles = pygame.mixer.Sound("bul.wav")
+pygame.mixer.Sound.get_volume(bulles)-3
+splash = pygame.mixer.Sound("pop.wav")
+
+
 class Ship:
     def __init__(self, x, y):
 
@@ -256,6 +264,8 @@ class App:
         #Faire tirer le vaisseau
         if pygame.K_SPACE in self.pressed_keys:
             self.timerl=time.time()
+            bulles.play()
+
             if self.timerl-self.timel>=0.5: #Cette conditionelle empeche de tirer le missile trop vite
                 self.ship.shot()
                 self.timel=self.timerl
@@ -276,6 +286,7 @@ class App:
                         self.groupe.band.remove(enemy)
                         bullets_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
                         self.score.score= self.score.score+100 #Si un ennemei est detruit je rajoue 100 points à mon score
+                        splash.play()
                         self.groupe.add()
 
             #Vérifier les collisions entres les missiles et le boss          
@@ -509,6 +520,8 @@ background = background.convert()
 #background sound
 mixer.music.load('Under.wav')
 mixer.music.play(-1) 
+
+
 async def main():    
     appli=App() #Je définie mon application, avec une valeur de vitesse
 
