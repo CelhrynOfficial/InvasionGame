@@ -11,14 +11,13 @@ class Ship:
 
         self.perso= image.load('bob4.svg') #J'utilise cette image comme reference pour ma hit box
         self.rect= self.perso.get_rect(x=x, y=y)
-        self.perso = image.load('spbobo.svg') #Puis j'utilise le sprite shite et le divise en sprite
+        self.perso = image.load('sritbob.png') #Puis j'utilise le sprite shite et le divise en sprite
 
 
-        self.sprite =  {K_DOWN:[self.perso.subsurface(x,0,96,96)for x in range(0,384,96)],
-                    K_LEFT:[self.perso.subsurface(x,96,96,96)for x in range(0,384,96)],
-                    K_RIGHT:[self.perso.subsurface(x,192,96,96)for x in range(0,384,96)],
-                    K_UP:[self.perso.subsurface(x,288,96,96)for x in range(0,384,96)]}
-
+        self.sprite=  {K_DOWN:[self.perso.subsurface(x,0,64,64)for x in range(0,256,64)],
+                    K_LEFT:[self.perso.subsurface(x,64,64,64)for x in range(0,256,64)],
+                    K_RIGHT:[self.perso.subsurface(x,128,64,64)for x in range(0,256,64)],
+                    K_UP:[self.perso.subsurface(x,192,64,64)for x in range(0,256,64)]}
         
         
         self.speed=2
@@ -167,7 +166,7 @@ class life:
 
 class score:
     def __init__(self):
-        self.score=0
+        self.score=14900
         self.font=pygame.font.Font(None, 24)
         
     
@@ -348,7 +347,7 @@ class App:
         elif self.score.score>=15000:
 
             #Faire tirer les ennemis
-            if self.cycle%200==0:
+            if self.cycle%150==0:
                 self.boss.shot()
             
                 
