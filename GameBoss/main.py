@@ -354,7 +354,7 @@ class App:
                     # Faire descendre les ennemis lorsqu'ils atteignent le bord de l'écran
                     if enemie.rect.left < 0 or enemie.rect.right > w:
                         enemie.velocity[0] = -enemie.velocity[0]  # Supprimer la multiplication par enemie.speed
-                        enemie.velocity[1] = 20  # Faire descendre les ennemis
+                        enemie.velocity[1] = 20//self.speed  # Faire descendre les ennemis
 
                     enemie.move()  # Je fais bouger le mob
                     enemie.velocity[1] = 0  # Réinitialiser la vitesse verticale après le mouvement
