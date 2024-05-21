@@ -414,7 +414,7 @@ class App:
 
         self.tog=time.time() #J'enregiste le temps du jeu
         
-        x=2 #Ici x represente la limite de vitesse
+        x=2*self.speed #Ici x represente la limite de vitesse
 
         if self.score.score>10000: #Si le joueur depasse le score de 10.000 point
             x=3*self.speed #Je change la limite de vitesse
