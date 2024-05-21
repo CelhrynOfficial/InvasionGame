@@ -258,11 +258,11 @@ class App:
 
         infoObject = pygame.display.Info()
         w=infoObject.current_w #Cette variable me permet de faire un écran traversable par les bords
-
-        if self.ship.rect.x== w:
+        print("w=", w, "x=" ,self.ship.rect.x)
+        if self.ship.rect.x>= w-70:
+            self.ship.rect.x=w-70
+        elif self.ship.rect.x<=0:
             self.ship.rect.x=0
-        elif self.ship.rect.x==0:
-            self.ship.rect.x=w
 
         self.ship.move()
 
@@ -528,7 +528,7 @@ mixer.music.play(-1)
 
 
 async def main():    
-    appli=App(10) #Je définie mon application, avec une valeur de vitesse
+    appli=App(1) #Je définie mon application, avec une valeur de vitesse
 
     key_events = []  # Liste pour stocker les événements clavier
 
