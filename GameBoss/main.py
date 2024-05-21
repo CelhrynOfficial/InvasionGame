@@ -136,7 +136,7 @@ class band:
         i=random.randint(0, len(self.band)-1)
         x=self.band[i].rect.x
         y=self.band[i].rect.y
-        bullet_e = enemie_b(x, y)  # Créez un nouveau laser
+        bullet_e = enemie_b(x, y, self.speed)  # Créez un nouveau laser
         self.bullets.append(bullet_e)  # Ajoutez le laser à la liste
 
 class Boss:
@@ -152,7 +152,7 @@ class Boss:
     def shot(self):
         x=self.rect.x
         y=self.rect.y
-        bullet = enemie_b (x, y)  # Créez un nouveau laser
+        bullet = enemie_b (x, y, self.speed)  # Créez un nouveau laser
         self.bullet_b.append(bullet)  # Ajoutez le laser à la liste
 
     def move(self):
