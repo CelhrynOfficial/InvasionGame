@@ -28,7 +28,7 @@ class Ship:
                K_UP:[self.perso.subsurface(x,288,96,96)for x in range(0,384,96)]}
         
         
-        self.speed=10
+        self.speed=2
         self.velocity=[0,0]
         self.bullets=[]
         self.direction=K_DOWN
@@ -43,7 +43,8 @@ class Ship:
     def shot(self):
         x=self.rect.x
         y=self.rect.y
-        bullet = Bullet(self,x, y)  # Créez un nouveau laser
+        speed=self.speed//2
+        bullet = Bullet(self,x, y,speed*3)  # Créez un nouveau laser
         self.bullets.append(bullet)  # Ajoutez le laser à la liste
 
     def respirte(self, perso): #Je change le sprite de l'objet
@@ -54,14 +55,14 @@ class Ship:
                     K_UP:[self.perso.subsurface(x,192,64,64)for x in range(0,256,64)]}
        
 class Bullet:
-    def __init__(self, ship, x, y): #J'initialise mon 'Bullet'
+    def __init__(self, ship, x, y, speed=3): #J'initialise mon 'Bullet'
         self.perso=pygame.image.load("bull.svg") #Son sprite
         self.rect= self.perso.get_rect(x=x, y=y)
         self.perso=pygame.image.load("spbl.png")
 
         self.sprite=[self.perso.subsurface((x%4)*64,(x//4)*64,64,64)for x in range(16)]
         self.ref=pygame.image.load("bull.svg")
-        self.speed=3
+        self.speed=speed
         self.velocity=[0,0]
         self.index = 0
 
@@ -95,14 +96,14 @@ class enemie:
 
 
 class enemie_b:
-    def __init__(self, x, y): #J'initialise mon 'Bullet' enemie
+    def __init__(self, x, y, speed=1): #J'initialise mon 'Bullet' enemie
         self.perso=pygame.image.load("bull.svg") #Son sprite
         self.rect= self.perso.get_rect(x=x, y=y)
         self.perso=pygame.image.load("ebsp.png")
 
         self.sprite=[self.perso.subsurface((x%4)*64,(x//4)*64,64,64)for x in range(16)]
         self.ref=pygame.image.load("bull.svg")
-        self.speed=1
+        self.speed=speed
         self.velocity=[0,0]
         self.index = 0
 
@@ -117,10 +118,10 @@ class enemie_b:
         screen.blit(self.sprite[self.index], self.rect)
 
 class band:
-    def __init__(self):
+    def __init__(self, speed):
         self.band=[]
         self.bullets=[]
-        self.speed=1
+        self.speed=speed
         for i in range(8):
             for j in range(3) :
                 enemies=enemie((i+0.3)*64*1.5, (j*100)+20, self.speed)
@@ -189,19 +190,23 @@ class App:
     def __init__(self, speed=1):
             screen.blit(background, (0, 0))
             
+            self.speed=speed
+
             self.game=True
 
             self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
-            
+            self.ship.speed=self.ship.speed*self.speed
 
             self.pressed_keys = []  # Liste pour stocker les touches enfoncées
 
             self.timel=0 #Variables me permettant de gere l'envoie des laser du joueur
             self.timerl=0
 
-            self.groupe=band() #Je crée les enemies
+            self.groupe=band(speed) #Je crée les enemies
+            
 
             self.boss=Boss(0,0)
+            self.boss.speed=self.boss.speed*speed
 
             self.tog=time.time() #Variable me permettant de gerer le changement de vitesse des enemies 
             self.anctog=time.time()
@@ -412,7 +417,7 @@ class App:
         x=2 #Ici x represente la limite de vitesse
 
         if self.score.score>10000: #Si le joueur depasse le score de 10.000 point
-            x=3 #Je change la limite de vitesse
+            x=3*self.speed #Je change la limite de vitesse
             self.groupe.speed =x
             for enemie in self.groupe.band:  #Et je l'applique à ton mon groupe
                     enemie.speed=self.groupe.speed
@@ -523,7 +528,7 @@ mixer.music.play(-1)
 
 
 async def main():    
-    appli=App() #Je définie mon application, avec une valeur de vitesse
+    appli=App(10) #Je définie mon application, avec une valeur de vitesse
 
     key_events = []  # Liste pour stocker les événements clavier
 
