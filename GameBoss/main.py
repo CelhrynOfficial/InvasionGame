@@ -11,7 +11,7 @@ pygame.init()
 pygame.mixer.init()
 bulles = pygame.mixer.Sound("bul.wav")
 pygame.mixer.Sound.get_volume(bulles)-3
-splash = pygame.mixer.Sound("pop.wav")
+#splash = pygame.mixer.Sound("pop.wav")
 
 
 class Ship:
@@ -258,7 +258,6 @@ class App:
 
         infoObject = pygame.display.Info()
         w=infoObject.current_w #Cette variable me permet de faire un écran traversable par les bords
-        print("w=", w, "x=" ,self.ship.rect.x)
         if self.ship.rect.x>= w-70:
             self.ship.rect.x=w-70
         elif self.ship.rect.x<=0:
@@ -269,7 +268,7 @@ class App:
         #Faire tirer le vaisseau
         if pygame.K_SPACE in self.pressed_keys:
             self.timerl=time.time()
-            bulles.play()
+            #bulles.play()
 
             if self.timerl-self.timel>=0.5: #Cette conditionelle empeche de tirer le missile trop vite
                 self.ship.shot()
@@ -291,7 +290,7 @@ class App:
                         self.groupe.band.remove(enemy)
                         bullets_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
                         self.score.score= self.score.score+100 #Si un ennemei est detruit je rajoue 100 points à mon score
-                        splash.play()
+                        #splash.play()
                         self.groupe.add()
 
             #Vérifier les collisions entres les missiles et le boss          
@@ -300,7 +299,6 @@ class App:
                         bullets_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
                         self.score.score= self.score.score+500 #Si le boss est touché je rajoue 100 points à mon score
                         self.boss.life.life=self.boss.life.life-1
-                        print(self.boss.life.life)
                         if self.boss.life.life==0:
                             self.victory()
                         
@@ -581,7 +579,7 @@ async def main():
 
         timerl=time.time()
 
-        if timerl-timel>=0.2: #Cette conditionelle empeche de tirer le missile trop vite
+        if timerl-timel>=0.2: #Cette conditionelle permet de ne pas compter trop de fois la meme intéractions
                     
             timel=timerl
             k = key.get_pressed()
