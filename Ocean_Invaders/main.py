@@ -300,7 +300,8 @@ class App:
                         self.score.score= self.score.score+500 #Si le boss est touché je rajoue 100 points à mon score
                         self.boss.life.life=self.boss.life.life-1
                         if self.boss.life.life==0:
-                            self.victory()
+                            #self.victory()
+                            self.game=False
                         
 
       
@@ -333,7 +334,8 @@ class App:
                     if bullet.rect.colliderect(self.ship.rect):
                         self.groupe.bullets.remove(bullet)
                         bullets_e_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
-                        self.gameover()
+                        #self.gameover()
+                        self.game=False
 
             # Supprimez les balles de la liste originale
             for bullet in bullets_e_to_remove:
@@ -380,7 +382,8 @@ class App:
                     if bullet.rect.colliderect(self.ship.rect):
                         self.boss.bullet_b.remove(bullet)
                         bullets_b_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
-                        self.gameover()
+                        self.game=False
+                        #self.gameover()
 
             # Supprimez les balles de la liste originale
             for bullet in bullets_b_to_remove:
@@ -575,7 +578,8 @@ async def main():
 
             for enemis in appli.groupe.band: #Si un enemies dépasse mon vaisseau, on arrete le jeu, le joueur à perdu
                 if enemis.rect.y>= appli.ship.rect.y:
-                    appli.gameover()
+                    #appli.gameover()
+                    appli.game=False
 
         timerl=time.time()
 
