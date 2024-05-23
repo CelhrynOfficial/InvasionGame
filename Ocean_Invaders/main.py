@@ -6,14 +6,6 @@ import time
 import random
 import asyncio
 
-#commande pour le son et bruitages
-pygame.init()
-pygame.mixer.init()
-bulles = pygame.mixer.Sound("bul.wav")
-pygame.mixer.Sound.get_volume(bulles)-3
-#splash = pygame.mixer.Sound("pop.wav")
-
-
 class Ship:
     def __init__(self, x, y):
 
@@ -33,6 +25,7 @@ class Ship:
         self.bullets=[]
         self.direction=K_DOWN
         self.index=0
+        self.bob=0
 
     def move(self):
         self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
@@ -44,7 +37,7 @@ class Ship:
         x=self.rect.x
         y=self.rect.y
         speed=self.speed//2
-        bullet = Bullet(self,x, y,speed*3)  # Créez un nouveau laser
+        bullet = Bullet(self,x, y,self.bob, speed*3)  # Créez un nouveau laser
         self.bullets.append(bullet)  # Ajoutez le laser à la liste
 
     def respirte(self, perso): #Je change le sprite de l'objet
@@ -53,12 +46,18 @@ class Ship:
                     K_LEFT:[self.perso.subsurface(x,64,64,64)for x in range(0,256,64)],
                     K_RIGHT:[self.perso.subsurface(x,128,64,64)for x in range(0,256,64)],
                     K_UP:[self.perso.subsurface(x,192,64,64)for x in range(0,256,64)]}
+        self.bob=1
        
 class Bullet:
-    def __init__(self, ship, x, y, speed=3): #J'initialise mon 'Bullet'
-        self.perso=pygame.image.load("bull.svg") #Son sprite
-        self.rect= self.perso.get_rect(x=x, y=y)
-        self.perso=pygame.image.load("spbl.png")
+    def __init__(self, ship, x, y,bob, speed=3): #J'initialise mon 'Bullet'
+        if bob==0:
+            self.perso=pygame.image.load("bull.svg") #Son sprite sheet
+            self.rect= self.perso.get_rect(x=x, y=y)
+            self.perso=pygame.image.load("spbl.png")#Son sprite
+        elif bob==1:
+            self.perso=pygame.image.load("bull.svg") #Son sprite sheet
+            self.rect= self.perso.get_rect(x=x, y=y)
+            self.perso=pygame.image.load("spritebobi.png")#Son sprite
 
         self.sprite=[self.perso.subsurface((x%4)*64,(x//4)*64,64,64)for x in range(16)]
         self.ref=pygame.image.load("bull.svg")
@@ -79,12 +78,17 @@ class Bullet:
 
     
 class enemie:
-    def __init__(self, x, y,speed=1):
-        self.sprite=pygame.image.load("jellyy.png")
+    def __init__(self, x, y,bob, speed=1):
+        if bob==0:
+            self.sprite=pygame.image.load("jellyy.png")
+        elif bob==1:
+            self.sprite=pygame.image.load("bob4.svg")
         self.rect=self.sprite.get_rect(x=x, y=y)
         self.speed=speed
         self.velocity=[1,0]
        
+    def resprite(self,sprite):
+        self.sprite=pygame.image.load(sprite)
 
     def move(self):
         self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
@@ -96,10 +100,16 @@ class enemie:
 
 
 class enemie_b:
-    def __init__(self, x, y, speed=1): #J'initialise mon 'Bullet' enemie
-        self.perso=pygame.image.load("bull.svg") #Son sprite
-        self.rect= self.perso.get_rect(x=x, y=y)
-        self.perso=pygame.image.load("ebsp.png")
+    def __init__(self, x, y,bob, speed=1): #J'initialise mon 'Bullet' enemie
+        if bob==0:
+            self.perso=pygame.image.load("bull.svg") #Son sprite sheet
+            self.rect= self.perso.get_rect(x=x, y=y)
+            self.perso=pygame.image.load("ebsp.png")#Son sprite
+        elif bob==1:
+            self.perso=pygame.image.load("bull.svg") #Son sprite sheet
+            self.rect= self.perso.get_rect(x=x, y=y)
+            self.perso=pygame.image.load("spritebobi.png")#Son sprite
+
 
         self.sprite=[self.perso.subsurface((x%4)*64,(x//4)*64,64,64)for x in range(16)]
         self.ref=pygame.image.load("bull.svg")
@@ -122,25 +132,31 @@ class band:
         self.band=[]
         self.bullets=[]
         self.speed=speed
+        self.bob=0
         for i in range(8):
             for j in range(3) :
-                enemies=enemie((i+0.3)*64*1.5, (j*100)+20, self.speed)
+                enemies=enemie((i+0.3)*64*1.5, (j*100)+20,self.bob, self.speed)
                 self.band.append(enemies)
     
-    def add(self):
-        enemies=enemie((0.3)*64*1.5, 20, self.speed)
+    def add(self, bob):
+        enemies=enemie((0.3)*64*1.5, 20, bob, self.speed)
         self.band.append(enemies)
 
-    def shot(self):
+    def shot(self,bob):
          
         i=random.randint(0, len(self.band)-1)
         x=self.band[i].rect.x
         y=self.band[i].rect.y
-        bullet_e = enemie_b(x, y, self.speed)  # Créez un nouveau laser
+        bullet_e = enemie_b(x, y,bob, self.speed)  # Créez un nouveau laser
         self.bullets.append(bullet_e)  # Ajoutez le laser à la liste
 
+    def resprite(self, sprite):
+        for enemie in self.band:
+            enemie.resprite(sprite)
+
+
 class Boss:
-    def __init__(self, x, y, speed=1):
+    def __init__(self, x, y, speed=1): 
         self.sprite=pygame.image.load("Boss.jpg")
         self.rect=self.sprite.get_rect(x=x, y=y)
         self.life=life(10)
@@ -149,17 +165,22 @@ class Boss:
         self.bullet_b=[]
        
 
-    def shot(self):
+    def shot(self,bob):
         x=self.rect.x
         y=self.rect.y
-        bullet = enemie_b (x, y, self.speed)  # Créez un nouveau laser
+        bullet = enemie_b (x, y,bob, self.speed)  # Créez un nouveau laser
         self.bullet_b.append(bullet)  # Ajoutez le laser à la liste
+
+    def respirte(self, perso): #Je change le sprite de l'objet
+        self.sprite=image.load(perso)
 
     def move(self):
         self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
 
     def draw(self):
         screen.blit(self.sprite, self.rect) #Je place mon missile à sa position  
+
+    
 
 class life:
     def __init__(self, lp):
@@ -175,7 +196,7 @@ class life:
 
 class score:
     def __init__(self):
-        self.score=0
+        self.score=14900
         self.font=pygame.font.Font(None, 34)
         
     
@@ -217,6 +238,7 @@ class App:
 
             self.background= pygame.image.load('prairioa.jpg')
 
+            self.bob=0 #Cette variable permet de savoir si les sprites sont ceux de base ou de bob
             
 
             
@@ -291,7 +313,7 @@ class App:
                         bullets_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
                         self.score.score= self.score.score+100 #Si un ennemei est detruit je rajoue 100 points à mon score
                         #splash.play()
-                        self.groupe.add()
+                        self.groupe.add(self.bob)
 
             #Vérifier les collisions entres les missiles et le boss          
             elif self.score.score>=15000:
@@ -316,7 +338,7 @@ class App:
         if self.score.score<15000:
             #Faire tirer les ennemis
             if self.cycle%200==0:
-                self.groupe.shot()
+                self.groupe.shot(self.bob)
             
                 
             # Mettez à jour la position de tous les lasers ennemis
@@ -364,7 +386,7 @@ class App:
 
             #Faire tirer les ennemis
             if self.cycle%150==0:
-                self.boss.shot()
+                self.boss.shot(self.bob)
             
                 
             # Mettez à jour la position de tous les lasers du boss
@@ -527,6 +549,15 @@ background = background.convert()
 mixer.music.load('Under.wav')
 mixer.music.play(-1) 
 
+#commande pour le son et bruitages
+pygame.init()
+pygame.mixer.init()
+bulles = pygame.mixer.Sound("bul.wav")
+pygame.mixer.Sound.get_volume(bulles)-3
+sponge=pygame.mixer.Sound("eponge.wav")
+pygame.mixer.Sound.get_volume(sponge)+3
+#splash = pygame.mixer.Sound("pop.wav")
+
 
 async def main():    
     appli=App(1) #Je définie mon application, avec une valeur de vitesse
@@ -540,7 +571,8 @@ async def main():
     timel=0 
     timerl=0
     
-
+    
+    
     while appli.game==True:  # Boucle principale du jeu
         
         for event in pygame.event.get():  # Récupère tous les événements pygame
@@ -551,8 +583,9 @@ async def main():
             if event.type in [pygame.KEYDOWN, pygame.KEYUP]:
                 
                 key_events.append(event)
-
+       
         if etat==0:
+            
             i=36
             fonte = font.SysFont('Arial', i)
             text = fonte.render('Appuyer sur ENTER', True, (0, 255, 0), (0, 5, 255))
@@ -564,6 +597,78 @@ async def main():
             screen.blit(evan, (20, 20+2*i))
             screen.blit(bapt, (20, 20+3*i))
             screen.blit(lisa, (20, 20+4*i))
+
+
+            timerl=time.time()
+
+            if timerl-timel>=0.2: #Cette conditionelle permet de ne pas compter trop de fois la meme intéractions
+                        
+                timel=timerl
+                k = key.get_pressed()
+                if k[K_UP]:
+                    if bob_code==0 or bob_code==1:
+                        bob_code+=1
+                        print(bob_code)
+                    elif bob_code==11:
+                        bob_code=11
+                    else:
+                        bob_code=0
+                
+                if k[K_DOWN]:
+                    if bob_code==2 or bob_code==3:
+                        bob_code+=1
+                        print(bob_code)
+                    elif bob_code==11:
+                        bob_code=11
+                    else:
+                        bob_code=0
+            
+                if k[K_LEFT]:
+                    if bob_code==4 or bob_code==6:
+                        bob_code+=1
+                        print(bob_code)
+                    elif bob_code==11:
+                        bob_code=11
+                    else:
+                        bob_code=0
+                        
+                if k[K_RIGHT]:
+                    if bob_code==5 or bob_code==7:
+                        bob_code+=1
+                        print(bob_code)
+                    elif bob_code==11:
+                        bob_code=11
+                    else:
+                        bob_code=0
+                        
+                if k[K_b]:
+                    if bob_code==8:
+                        bob_code+=1
+                        print(bob_code)
+                    elif bob_code==11:
+                        bob_code=11
+                    else:
+                        bob_code=0
+                        
+                if k[K_a]:
+                    if bob_code==9:
+                        bob_code+=1
+                        print(bob_code)
+                    elif bob_code==11:
+                        bob_code=11
+                    else:
+                        bob_code=0
+                        
+                
+
+            if bob_code==10:
+                bob_code=11
+                print("Bob mode activé")  
+                sponge.play()              
+                appli.ship.respirte('spbl.png')
+                appli.groupe.resprite('bob4.svg')
+                appli.boss.respirte('bob4.svg')
+                appli.bob=1
 
             pygame.display.flip()
             k = key.get_pressed()
@@ -581,60 +686,7 @@ async def main():
                     #appli.gameover()
                     appli.game=False
 
-        timerl=time.time()
-
-        if timerl-timel>=0.2: #Cette conditionelle permet de ne pas compter trop de fois la meme intéractions
-                    
-            timel=timerl
-            k = key.get_pressed()
-            if k[K_UP]:
-                if bob_code==0 or bob_code==1:
-                    bob_code+=1
-                    print(bob_code)
-                else:
-                    bob_code=0
-            
-            if k[K_DOWN]:
-                if bob_code==2 or bob_code==3:
-                    bob_code+=1
-                    print(bob_code)
-                else:
-                    bob_code=0
         
-            if k[K_LEFT]:
-                if bob_code==4 or bob_code==6:
-                    bob_code+=1
-                    print(bob_code)
-                else:
-                    bob_code=0
-                    
-            if k[K_RIGHT]:
-                if bob_code==5 or bob_code==7:
-                    bob_code+=1
-                    print(bob_code)
-                else:
-                    bob_code=0
-                    
-            if k[K_b]:
-                if bob_code==8:
-                    bob_code+=1
-                    print(bob_code)
-                else:
-                    bob_code=0
-                    
-            if k[K_a]:
-                if bob_code==9:
-                    bob_code+=1
-                    print(bob_code)
-                else:
-                    bob_code=0
-                    
-            
-
-        if bob_code==10:
-            print("Bob mode activé")
-            bob_code=11
-            appli.ship.respirte('spbl.png')
 
         time.sleep(0.001)
         
