@@ -11,13 +11,13 @@ class Ship:
 
         self.perso= image.load('bob4.svg') #J'utilise cette image comme reference pour ma hit box
         self.rect= self.perso.get_rect(x=x, y=y)
-        self.perso = image.load('spritebobi.png') #Puis j'utilise le sprite shite et le divise en sprite
+        self.perso = image.load('sap.png') #Puis j'utilise le sprite shite et le divise en sprite
 
 
         self.sprite = {K_DOWN:[self.perso.subsurface(x,0,96,96)for x in range(0,384,96)],
                K_LEFT:[self.perso.subsurface(x,96,96,96)for x in range(0,384,96)],
                K_RIGHT:[self.perso.subsurface(x,192,96,96)for x in range(0,384,96)],
-               K_UP:[self.perso.subsurface(x,288,96,96)for x in range(0,384,96)]}
+               K_UP:[self.perso.subsurface(x,288,96,96)for x in range(0,384,96)]} 
         
         
         self.speed=2
@@ -42,10 +42,10 @@ class Ship:
 
     def respirte(self, perso): #Je change le sprite de l'objet
         self.perso=image.load(perso)
-        self.sprite=  {K_DOWN:[self.perso.subsurface(x,0,64,64)for x in range(0,256,64)],
-                    K_LEFT:[self.perso.subsurface(x,64,64,64)for x in range(0,256,64)],
-                    K_RIGHT:[self.perso.subsurface(x,128,64,64)for x in range(0,256,64)],
-                    K_UP:[self.perso.subsurface(x,192,64,64)for x in range(0,256,64)]}
+        self.sprite= {K_DOWN:[self.perso.subsurface(x,0,96,96)for x in range(0,384,96)],
+               K_LEFT:[self.perso.subsurface(x,96,96,96)for x in range(0,384,96)],
+               K_RIGHT:[self.perso.subsurface(x,192,96,96)for x in range(0,384,96)],
+               K_UP:[self.perso.subsurface(x,288,96,96)for x in range(0,384,96)]} 
         self.bob=1
        
 class Bullet:
@@ -642,7 +642,7 @@ async def main(etat=0, key_events= [],bob_code=0, timel=0, timerl=0):
                 bob_code=11
                 print("Bob mode activé")  
                 sponge.play()              
-                appli.ship.respirte('spbl.png')
+                appli.ship.respirte('spritebobi.png')
                 appli.groupe.resprite('bob4.svg')
                 appli.boss.respirte('bob4.svg')
                 appli.bob=1
