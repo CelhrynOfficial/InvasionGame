@@ -213,7 +213,7 @@ class App:
             
             self.speed=speed
 
-            self.game=True
+            self.game=0
 
             self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
             self.ship.speed=self.ship.speed*self.speed
@@ -322,8 +322,9 @@ class App:
                         self.score.score= self.score.score+500 #Si le boss est touché je rajoue 100 points à mon score
                         self.boss.life.life=self.boss.life.life-1
                         if self.boss.life.life==0:
-                            #self.victory()
-                            self.game=False
+                            self.game=1
+                            self.victory()
+                            #self.game=False
                         
 
       
@@ -356,8 +357,8 @@ class App:
                     if bullet.rect.colliderect(self.ship.rect):
                         self.groupe.bullets.remove(bullet)
                         bullets_e_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
-                        #self.gameover()
-                        self.game=False
+                        self.gameover()
+                        #self.game=False
 
             # Supprimez les balles de la liste originale
             for bullet in bullets_e_to_remove:
@@ -404,8 +405,8 @@ class App:
                     if bullet.rect.colliderect(self.ship.rect):
                         self.boss.bullet_b.remove(bullet)
                         bullets_b_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
-                        self.game=False
-                        #self.gameover()
+                        self.game=2
+                        self.gameover()
 
             # Supprimez les balles de la liste originale
             for bullet in bullets_b_to_remove:
@@ -494,40 +495,24 @@ class App:
         pygame.display.flip()  # J'affiche tous les sprites
 
     def gameover(self):
-        while 1:
-            for event in pygame.event.get():  # Récupère tous les événements pygame
-                        if event.type == pygame.QUIT:
-                            sys.exit()
+        
+        self.game=2
 
-            screen.fill((0, 0, 0))  # J'efface l'écran précédent
-            fonte = font.SysFont('Arial', 36)
-            infoObject = pygame.display.Info()
-            x=infoObject.current_w//2
-           
-            y=infoObject.current_h//2
-            text = fonte.render('Game Over', True, (255, 0, 0))
+        self.background= pygame.image.load('gameover.png')
             
-            screen.blit(self.background,(0,0))
-            screen.blit(text, (x-60,y-30))
-            pygame.display.flip()
+        screen.blit(self.background,(0,0))
+            
+        pygame.display.flip()
 
     def victory(self):
-        while 1:
-            for event in pygame.event.get():  # Récupère tous les événements pygame
-                        if event.type == pygame.QUIT:
-                            sys.exit()
+        
+        self.game=1
 
-            screen.fill((0, 0, 0))  # J'efface l'écran précédent
-            fonte = font.SysFont('Arial', 36)
-            infoObject = pygame.display.Info()
-            x=infoObject.current_w//2
-           
-            y=infoObject.current_h//2
-            text = fonte.render('You Win', True, (0, 255, 0))
+        self.background= pygame.image.load('winner.png')
             
-            screen.blit(self.background,(0,0))
-            screen.blit(text, (x-60,y-30))
-            pygame.display.flip()
+        screen.blit(self.background,(0,0))
+            
+        pygame.display.flip()
 
 
 # Taille initiale de la fenêtre
@@ -587,17 +572,8 @@ async def main(etat=0, key_events= [],bob_code=0, timel=0, timerl=0):
        
         if etat==0:
             
-            i=36
-            fonte = font.SysFont('Arial', i)
-            text = fonte.render('Appuyer sur ENTER', True, (0, 255, 0), (0, 5, 255))
-            evan= fonte.render('Developeur Jeu: Evan Barbier Veillon', (0, 255, 0), (0, 5, 255))
-            bapt=fonte.render('Developeur Web: Baptiste Puaud', (0, 255, 0), (0, 5, 255))
-            lisa=fonte.render('Direction artistique: Lisa Barbeau', (0, 255, 0), (0, 5, 255))
-            screen.fill((255,255,255))
-            screen.blit(text, (20, 20+i))
-            screen.blit(evan, (20, 20+2*i))
-            screen.blit(bapt, (20, 20+3*i))
-            screen.blit(lisa, (20, 20+4*i))
+            enter=pygame.image.load('entrer.png')
+            screen.blit(enter,(0,0))
 
 
             timerl=time.time()
@@ -677,15 +653,24 @@ async def main(etat=0, key_events= [],bob_code=0, timel=0, timerl=0):
                 etat=1
 
         if etat==1 :
-            # Mettez à jour et dessinez le jeu
-            appli.update(key_events)
-            appli.draw()
+            print(appli.game)
+            if appli.game==0:
+                # Mettez à jour et dessinez le jeu
+                appli.update(key_events)
+                appli.draw()
 
 
-            for enemis in appli.groupe.band: #Si un enemies dépasse mon vaisseau, on arrete le jeu, le joueur à perdu
-                if enemis.rect.y>= appli.ship.rect.y:
-                    #appli.gameover()
-                    appli.game=False
+                for enemis in appli.groupe.band: #Si un enemies dépasse mon vaisseau, on arrete le jeu, le joueur à perdu
+                    if enemis.rect.y>= appli.ship.rect.y:
+                        appli.gameover()
+                        appli.game=2
+            
+            elif appli.game==1:
+                appli.victory()
+                appli.game=1
+            elif appli.game==2:
+                appli.gameover()
+                appli.game=2
 
         
 
