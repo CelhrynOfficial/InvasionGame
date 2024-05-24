@@ -558,18 +558,19 @@ sponge=pygame.mixer.Sound("eponge.wav")
 pygame.mixer.Sound.get_volume(sponge)+3
 #splash = pygame.mixer.Sound("pop.wav")
 
+appli=App(1) #Je définie mon application, avec une valeur de vitesse
 
-async def main():    
-    appli=App(1) #Je définie mon application, avec une valeur de vitesse
+key_events = []  # Liste pour stocker les événements clavier
 
-    key_events = []  # Liste pour stocker les événements clavier
+etat = 0
 
-    etat = 0
+bob_code=0
 
-    bob_code=0
+timel=0 
+timerl=0
 
-    timel=0 
-    timerl=0
+async def main(etat=0, key_events= [],bob_code=0, timel=0, timerl=0):    
+    
     
     
     
