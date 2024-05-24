@@ -573,7 +573,7 @@ async def main():
     
     
     
-    while True:  # Boucle principale du jeu
+    while appli.game==True:  # Boucle principale du jeu
         
         for event in pygame.event.get():  # Récupère tous les événements pygame
             if event.type == pygame.QUIT:
