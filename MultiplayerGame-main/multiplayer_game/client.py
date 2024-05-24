@@ -31,6 +31,7 @@ def main():
     n = Network()
     clock = pygame.time.Clock()
     player = n.player
+    score = 0
     while True:
         clock.tick(60)
         list_players = n.send(player)
