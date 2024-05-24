@@ -157,7 +157,7 @@ class band:
 
 class Boss:
     def __init__(self, x, y, speed=1): 
-        self.sprite=pygame.image.load("Boss.jpg")
+        self.sprite=pygame.image.load("Boss.png")
         self.rect=self.sprite.get_rect(x=x, y=y)
         self.life=life(10)
         self.speed=speed
@@ -196,7 +196,7 @@ class life:
 
 class score:
     def __init__(self):
-        self.score=0
+        self.score=14900
         self.font=pygame.font.Font(None, 34)
         
     
@@ -653,7 +653,7 @@ async def main(etat=0, key_events= [],bob_code=0, timel=0, timerl=0):
                 etat=1
 
         if etat==1 :
-            print(appli.game)
+            
             if appli.game==0:
                 # Mettez à jour et dessinez le jeu
                 appli.update(key_events)
