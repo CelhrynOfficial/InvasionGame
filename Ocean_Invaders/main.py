@@ -157,7 +157,7 @@ class band:
 
 class Boss:
     def __init__(self, x, y, speed=1): 
-        self.sprite=pygame.image.load("Boss.png")
+        self.sprite=pygame.image.load("planc.png")
         self.rect=self.sprite.get_rect(x=x, y=y)
         self.life=life(10)
         self.speed=speed
