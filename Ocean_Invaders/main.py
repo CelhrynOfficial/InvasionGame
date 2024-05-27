@@ -6,26 +6,33 @@ import time
 import random
 import asyncio
 
+#commande pour le son et bruitages
+pygame.init()
+pygame.mixer.init()
+#bulles = pygame.mixer.Sound("bul.wav")
+#pygame.mixer.Sound.get_volume(bulles)-3
+splash = pygame.mixer.Sound("pop.wav")
+
+
 class Ship:
     def __init__(self, x, y):
 
         self.perso= image.load('bob4.svg') #J'utilise cette image comme reference pour ma hit box
         self.rect= self.perso.get_rect(x=x, y=y)
-        self.perso = image.load('sap.png') #Puis j'utilise le sprite shite et le divise en sprite
+        self.perso = image.load('spritebobi.png') #Puis j'utilise le sprite shite et le divise en sprite
 
 
         self.sprite = {K_DOWN:[self.perso.subsurface(x,0,96,96)for x in range(0,384,96)],
                K_LEFT:[self.perso.subsurface(x,96,96,96)for x in range(0,384,96)],
                K_RIGHT:[self.perso.subsurface(x,192,96,96)for x in range(0,384,96)],
-               K_UP:[self.perso.subsurface(x,288,96,96)for x in range(0,384,96)]} 
+               K_UP:[self.perso.subsurface(x,288,96,96)for x in range(0,384,96)]}
         
         
-        self.speed=2
+        self.speed=1
         self.velocity=[0,0]
         self.bullets=[]
         self.direction=K_DOWN
         self.index=0
-        self.bob=0
 
     def move(self):
         self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
@@ -36,32 +43,25 @@ class Ship:
     def shot(self):
         x=self.rect.x
         y=self.rect.y
-        speed=self.speed//2
-        bullet = Bullet(self,x, y,self.bob, speed*3)  # Créez un nouveau laser
+        bullet = Bullet(self,x, y)  # Créez un nouveau laser
         self.bullets.append(bullet)  # Ajoutez le laser à la liste
 
     def respirte(self, perso): #Je change le sprite de l'objet
         self.perso=image.load(perso)
-        self.sprite= {K_DOWN:[self.perso.subsurface(x,0,96,96)for x in range(0,384,96)],
-               K_LEFT:[self.perso.subsurface(x,96,96,96)for x in range(0,384,96)],
-               K_RIGHT:[self.perso.subsurface(x,192,96,96)for x in range(0,384,96)],
-               K_UP:[self.perso.subsurface(x,288,96,96)for x in range(0,384,96)]} 
-        self.bob=1
+        self.sprite=  {K_DOWN:[self.perso.subsurface(x,0,64,64)for x in range(0,256,64)],
+                    K_LEFT:[self.perso.subsurface(x,64,64,64)for x in range(0,256,64)],
+                    K_RIGHT:[self.perso.subsurface(x,128,64,64)for x in range(0,256,64)],
+                    K_UP:[self.perso.subsurface(x,192,64,64)for x in range(0,256,64)]}
        
 class Bullet:
-    def __init__(self, ship, x, y,bob, speed=3): #J'initialise mon 'Bullet'
-        if bob==0:
-            self.perso=pygame.image.load("bull.svg") #Son sprite sheet
-            self.rect= self.perso.get_rect(x=x, y=y)
-            self.perso=pygame.image.load("spbl.png")#Son sprite
-        elif bob==1:
-            self.perso=pygame.image.load("bull.svg") #Son sprite sheet
-            self.rect= self.perso.get_rect(x=x, y=y)
-            self.perso=pygame.image.load("spritebobi.png")#Son sprite
+    def __init__(self, ship, x, y): #J'initialise mon 'Bullet'
+        self.perso=pygame.image.load("bull.svg") #Son sprite
+        self.rect= self.perso.get_rect(x=x, y=y)
+        self.perso=pygame.image.load("spbl.png")
 
         self.sprite=[self.perso.subsurface((x%4)*64,(x//4)*64,64,64)for x in range(16)]
         self.ref=pygame.image.load("bull.svg")
-        self.speed=speed
+        self.speed=3
         self.velocity=[0,0]
         self.index = 0
 
@@ -78,17 +78,12 @@ class Bullet:
 
     
 class enemie:
-    def __init__(self, x, y,bob, speed=1):
-        if bob==0:
-            self.sprite=pygame.image.load("jellyy.png")
-        elif bob==1:
-            self.sprite=pygame.image.load("bob4.svg")
+    def __init__(self, x, y,speed=1):
+        self.sprite=pygame.image.load("jellyy.png")
         self.rect=self.sprite.get_rect(x=x, y=y)
         self.speed=speed
         self.velocity=[1,0]
        
-    def resprite(self,sprite):
-        self.sprite=pygame.image.load(sprite)
 
     def move(self):
         self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
@@ -100,16 +95,10 @@ class enemie:
 
 
 class enemie_b:
-    def __init__(self, x, y,bob, speed=1): #J'initialise mon 'Bullet' enemie
-        if bob==0:
-            self.perso=pygame.image.load("bull.svg") #Son sprite sheet
-            self.rect= self.perso.get_rect(x=x, y=y)
-            self.perso=pygame.image.load("ebsp.png")#Son sprite
-        elif bob==1:
-            self.perso=pygame.image.load("bull.svg") #Son sprite sheet
-            self.rect= self.perso.get_rect(x=x, y=y)
-            self.perso=pygame.image.load("spritebobi.png")#Son sprite
-
+    def __init__(self, x, y, speed): #J'initialise mon 'Bullet' enemie
+        self.perso=pygame.image.load("bull.svg") #Son sprite
+        self.rect= self.perso.get_rect(x=x, y=y)
+        self.perso=pygame.image.load("ebsp.png")
 
         self.sprite=[self.perso.subsurface((x%4)*64,(x//4)*64,64,64)for x in range(16)]
         self.ref=pygame.image.load("bull.svg")
@@ -132,55 +121,45 @@ class band:
         self.band=[]
         self.bullets=[]
         self.speed=speed
-        self.bob=0
+        self.speed_b=speed
         for i in range(8):
             for j in range(3) :
-                enemies=enemie((i+0.3)*64*1.5, (j*100)+20,self.bob, self.speed)
+                enemies=enemie((i+0.3)*64*1.5, (j*100)+20, self.speed)
                 self.band.append(enemies)
     
-    def add(self, bob):
-        enemies=enemie((0.3)*64*1.5, 20, bob, self.speed)
+    def add(self):
+        enemies=enemie((0.3)*64*1.5, 20, self.speed)
         self.band.append(enemies)
 
-    def shot(self,bob):
+    def shot(self):
          
         i=random.randint(0, len(self.band)-1)
         x=self.band[i].rect.x
         y=self.band[i].rect.y
-        bullet_e = enemie_b(x, y,bob, self.speed)  # Créez un nouveau laser
+        bullet_e = enemie_b(x, y,  self.speed_b)  # Créez un nouveau laser
         self.bullets.append(bullet_e)  # Ajoutez le laser à la liste
 
-    def resprite(self, sprite):
-        for enemie in self.band:
-            enemie.resprite(sprite)
-
-
 class Boss:
-    def __init__(self, x, y, speed=1): 
-        self.sprite=pygame.image.load("planc.png")
+    def __init__(self, x, y, speed=1):
+        self.sprite=pygame.image.load("Boss.png")
         self.rect=self.sprite.get_rect(x=x, y=y)
         self.life=life(10)
-        self.speed=speed
+        self.speed=speed*2
         self.velocity=[3,0]
         self.bullet_b=[]
        
 
-    def shot(self,bob):
+    def shot(self):
         x=self.rect.x
         y=self.rect.y
-        bullet = enemie_b (x, y,bob, self.speed)  # Créez un nouveau laser
+        bullet = enemie_b (x, y, self.speed)  # Créez un nouveau laser
         self.bullet_b.append(bullet)  # Ajoutez le laser à la liste
-
-    def respirte(self, perso): #Je change le sprite de l'objet
-        self.sprite=image.load(perso)
 
     def move(self):
         self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
 
     def draw(self):
         screen.blit(self.sprite, self.rect) #Je place mon missile à sa position  
-
-    
 
 class life:
     def __init__(self, lp):
@@ -196,7 +175,7 @@ class life:
 
 class score:
     def __init__(self):
-        self.score=14900
+        self.score=0
         self.font=pygame.font.Font(None, 34)
         
     
@@ -211,23 +190,21 @@ class App:
     def __init__(self, speed=1):
             screen.blit(background, (0, 0))
             
-            self.speed=speed
-
             self.game=0
-
+                
+            self.speed=speed
+            
             self.ship = Ship((infoObject.current_w / 2) - 20, (infoObject.current_h - (infoObject.current_h / 10)) - 20)
-            self.ship.speed=self.ship.speed*self.speed
+            self.ship.speed=self.speed*2 #Création du vaisseau
 
             self.pressed_keys = []  # Liste pour stocker les touches enfoncées
 
             self.timel=0 #Variables me permettant de gere l'envoie des laser du joueur
             self.timerl=0
 
-            self.groupe=band(speed) #Je crée les enemies
-            
+            self.groupe=band(self.speed) #Je crée les enemies
 
-            self.boss=Boss(0,0)
-            self.boss.speed=self.boss.speed*speed
+            self.boss=Boss(0,0, self.speed)
 
             self.tog=time.time() #Variable me permettant de gerer le changement de vitesse des enemies 
             self.anctog=time.time()
@@ -238,7 +215,6 @@ class App:
 
             self.background= pygame.image.load('prairioa.jpg')
 
-            self.bob=0 #Cette variable permet de savoir si les sprites sont ceux de base ou de bob
             
 
             
@@ -280,10 +256,11 @@ class App:
 
         infoObject = pygame.display.Info()
         w=infoObject.current_w #Cette variable me permet de faire un écran traversable par les bords
-        if self.ship.rect.x>= w-70:
-            self.ship.rect.x=w-70
-        elif self.ship.rect.x<=0:
+
+        if self.ship.rect.x== w:
             self.ship.rect.x=0
+        elif self.ship.rect.x==0:
+            self.ship.rect.x=w
 
         self.ship.move()
 
@@ -312,8 +289,8 @@ class App:
                         self.groupe.band.remove(enemy)
                         bullets_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
                         self.score.score= self.score.score+100 #Si un ennemei est detruit je rajoue 100 points à mon score
-                        #splash.play()
-                        self.groupe.add(self.bob)
+                        splash.play()
+                        self.groupe.add()
 
             #Vérifier les collisions entres les missiles et le boss          
             elif self.score.score>=15000:
@@ -321,10 +298,9 @@ class App:
                         bullets_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
                         self.score.score= self.score.score+500 #Si le boss est touché je rajoue 100 points à mon score
                         self.boss.life.life=self.boss.life.life-1
+                        print(self.boss.life.life)
                         if self.boss.life.life==0:
-                            self.game=1
                             self.victory()
-                            #self.game=False
                         
 
       
@@ -339,7 +315,7 @@ class App:
         if self.score.score<15000:
             #Faire tirer les ennemis
             if self.cycle%200==0:
-                self.groupe.shot(self.bob)
+                self.groupe.shot()
             
                 
             # Mettez à jour la position de tous les lasers ennemis
@@ -358,7 +334,6 @@ class App:
                         self.groupe.bullets.remove(bullet)
                         bullets_e_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
                         self.gameover()
-                        #self.game=False
 
             # Supprimez les balles de la liste originale
             for bullet in bullets_e_to_remove:
@@ -377,7 +352,7 @@ class App:
                     # Faire descendre les ennemis lorsqu'ils atteignent le bord de l'écran
                     if enemie.rect.left < 0 or enemie.rect.right > w:
                         enemie.velocity[0] = -enemie.velocity[0]  # Supprimer la multiplication par enemie.speed
-                        enemie.velocity[1] = 20//self.speed  # Faire descendre les ennemis
+                        enemie.velocity[1] = 20  # Faire descendre les ennemis
 
                     enemie.move()  # Je fais bouger le mob
                     enemie.velocity[1] = 0  # Réinitialiser la vitesse verticale après le mouvement
@@ -387,7 +362,7 @@ class App:
 
             #Faire tirer les ennemis
             if self.cycle%150==0:
-                self.boss.shot(self.bob)
+                self.boss.shot()
             
                 
             # Mettez à jour la position de tous les lasers du boss
@@ -405,8 +380,8 @@ class App:
                     if bullet.rect.colliderect(self.ship.rect):
                         self.boss.bullet_b.remove(bullet)
                         bullets_b_to_remove.append(bullet)  # Ajoutez la balle à la liste temporaire
-                        self.game=2
                         self.gameover()
+                        self.game=2
 
             # Supprimez les balles de la liste originale
             for bullet in bullets_b_to_remove:
@@ -468,33 +443,39 @@ class App:
         
 
     def draw(self):
-        screen.fill((0, 0, 0))  # J'efface l'écran précédent
-        screen.blit(self.background,(0,0))
-        self.ship.draw()  # Je draw le vaisseau à sa nouvelle position
+        if self.game==0:
+            screen.fill((0, 0, 0))  # J'efface l'écran précédent
+            screen.blit(self.background,(0,0))
+            self.ship.draw()  # Je draw le vaisseau à sa nouvelle position
+                
+            for bullet in self.ship.bullets:  # Dessinez tous les lasers
+                bullet.draw()
+
+            if self.score.score<15000:
+                for enemie in self.groupe.band:
+                    enemie.draw()
+
+                for bullet in self.groupe.bullets:
+                    bullet.draw()
+
+            elif self.score.score>=15000:
+                self.boss.draw()
+                self.boss.life.draw()
+                for bullet in self.boss.bullet_b:
+                    bullet.draw()
+
             
-        for bullet in self.ship.bullets:  # Dessinez tous les lasers
-            bullet.draw()
 
-        if self.score.score<15000:
-            for enemie in self.groupe.band:
-                enemie.draw()
-
-            for bullet in self.groupe.bullets:
-                bullet.draw()
-
-        elif self.score.score>=15000:
-            self.boss.draw()
-            self.boss.life.draw()
-            for bullet in self.boss.bullet_b:
-                bullet.draw()
-
-        
-
-        self.score.draw()
-
+            self.score.draw()
+        elif self.game==1:
+            self.victory
+        elif self.game==2:
+            self.gameover
         pygame.display.flip()  # J'affiche tous les sprites
 
     def gameover(self):
+        
+        screen.fill((0, 0, 0))
         
         self.game=2
 
@@ -505,6 +486,8 @@ class App:
         pygame.display.flip()
 
     def victory(self):
+        
+        screen.fill((0, 0, 0))
         
         self.game=1
 
@@ -534,31 +517,19 @@ background = background.convert()
 mixer.music.load('Under.wav')
 mixer.music.play(-1) 
 
-#commande pour le son et bruitages
-pygame.init()
-pygame.mixer.init()
-bulles = pygame.mixer.Sound("bul.wav")
-pygame.mixer.Sound.get_volume(bulles)-3
-sponge=pygame.mixer.Sound("eponge.wav")
-pygame.mixer.Sound.get_volume(sponge)+3
-#splash = pygame.mixer.Sound("pop.wav")
 
-appli=App(1) #Je définie mon application, avec une valeur de vitesse
+async def main():    
+    appli=App(3) #Je définie mon application, avec une valeur de vitesse
 
-key_events = []  # Liste pour stocker les événements clavier
+    key_events = []  # Liste pour stocker les événements clavier
 
-etat = 0
+    etat = 0
 
-bob_code=0
+    bob_code=0
 
-timel=0 
-timerl=0
+    timel=0 
+    timerl=0
 
-async def main(etat=0, key_events= [],bob_code=0, timel=0, timerl=0):    
-    
-    
-    
-    
     while True:  # Boucle principale du jeu
         
         for event in pygame.event.get():  # Récupère tous les événements pygame
@@ -569,16 +540,19 @@ async def main(etat=0, key_events= [],bob_code=0, timel=0, timerl=0):
             if event.type in [pygame.KEYDOWN, pygame.KEYUP]:
                 
                 key_events.append(event)
-       
-        if etat==0:
-            
-            enter=pygame.image.load('entrer.png')
-            screen.blit(enter,(0,0))
 
+        if appli.game==0:
+            if etat==0:
+                enter=pygame.image.load('entrer.png')
+                screen.blit(enter,(0,0))
+                pygame.display.flip()
+                k = key.get_pressed()
+                if k[K_RETURN]:
+                    etat=1
+                
+                timerl=time.time()
 
-            timerl=time.time()
-
-            if timerl-timel>=0.2: #Cette conditionelle permet de ne pas compter trop de fois la meme intéractions
+            if timerl-timel>=0.2: #Cette conditionelle empeche de tirer le missile trop vite
                         
                 timel=timerl
                 k = key.get_pressed()
@@ -586,8 +560,6 @@ async def main(etat=0, key_events= [],bob_code=0, timel=0, timerl=0):
                     if bob_code==0 or bob_code==1:
                         bob_code+=1
                         print(bob_code)
-                    elif bob_code==11:
-                        bob_code=11
                     else:
                         bob_code=0
                 
@@ -595,8 +567,6 @@ async def main(etat=0, key_events= [],bob_code=0, timel=0, timerl=0):
                     if bob_code==2 or bob_code==3:
                         bob_code+=1
                         print(bob_code)
-                    elif bob_code==11:
-                        bob_code=11
                     else:
                         bob_code=0
             
@@ -604,8 +574,6 @@ async def main(etat=0, key_events= [],bob_code=0, timel=0, timerl=0):
                     if bob_code==4 or bob_code==6:
                         bob_code+=1
                         print(bob_code)
-                    elif bob_code==11:
-                        bob_code=11
                     else:
                         bob_code=0
                         
@@ -613,8 +581,6 @@ async def main(etat=0, key_events= [],bob_code=0, timel=0, timerl=0):
                     if bob_code==5 or bob_code==7:
                         bob_code+=1
                         print(bob_code)
-                    elif bob_code==11:
-                        bob_code=11
                     else:
                         bob_code=0
                         
@@ -622,8 +588,6 @@ async def main(etat=0, key_events= [],bob_code=0, timel=0, timerl=0):
                     if bob_code==8:
                         bob_code+=1
                         print(bob_code)
-                    elif bob_code==11:
-                        bob_code=11
                     else:
                         bob_code=0
                         
@@ -631,30 +595,17 @@ async def main(etat=0, key_events= [],bob_code=0, timel=0, timerl=0):
                     if bob_code==9:
                         bob_code+=1
                         print(bob_code)
-                    elif bob_code==11:
-                        bob_code=11
                     else:
                         bob_code=0
                         
                 
 
             if bob_code==10:
+                print("Bob mode activé")
                 bob_code=11
-                print("Bob mode activé")  
-                sponge.play()              
-                appli.ship.respirte('spritebobi.png')
-                appli.groupe.resprite('bob4.svg')
-                appli.boss.respirte('bob4.svg')
-                appli.bob=1
-
-            pygame.display.flip()
-            k = key.get_pressed()
-            if k[K_RETURN]:
-                etat=1
-
-        if etat==1 :
-            
-            if appli.game==0:
+                appli.ship.respirte('spbl.png')
+                
+            if etat==1:
                 # Mettez à jour et dessinez le jeu
                 appli.update(key_events)
                 appli.draw()
@@ -663,14 +614,6 @@ async def main(etat=0, key_events= [],bob_code=0, timel=0, timerl=0):
                 for enemis in appli.groupe.band: #Si un enemies dépasse mon vaisseau, on arrete le jeu, le joueur à perdu
                     if enemis.rect.y>= appli.ship.rect.y:
                         appli.gameover()
-                        appli.game=2
-            
-            elif appli.game==1:
-                appli.victory()
-                appli.game=1
-            elif appli.game==2:
-                appli.gameover()
-                appli.game=2
 
         
 
@@ -679,8 +622,7 @@ async def main(etat=0, key_events= [],bob_code=0, timel=0, timerl=0):
     
         
         
-        
-        await asyncio.sleep(0)
         key_events.clear()  # Nettoyez la liste des événements clavier après les avoir traités
+        await asyncio.sleep(0)
 
 asyncio.run(main())
