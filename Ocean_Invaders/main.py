@@ -46,12 +46,7 @@ class Ship:
         bullet = Bullet(self,x, y)  # Créez un nouveau laser
         self.bullets.append(bullet)  # Ajoutez le laser à la liste
 
-    def respirte(self, perso): #Je change le sprite de l'objet
-        self.perso=image.load(perso)
-        self.sprite=  {K_DOWN:[self.perso.subsurface(x,0,64,64)for x in range(0,256,64)],
-                    K_LEFT:[self.perso.subsurface(x,64,64,64)for x in range(0,256,64)],
-                    K_RIGHT:[self.perso.subsurface(x,128,64,64)for x in range(0,256,64)],
-                    K_UP:[self.perso.subsurface(x,192,64,64)for x in range(0,256,64)]}
+
        
 class Bullet:
     def __init__(self, ship, x, y): #J'initialise mon 'Bullet'
@@ -144,7 +139,7 @@ class Boss:
         self.sprite=pygame.image.load("Boss.png")
         self.rect=self.sprite.get_rect(x=x, y=y)
         self.life=life(10)
-        self.speed=speed*2
+        self.speed=speed
         self.velocity=[3,0]
         self.bullet_b=[]
        
@@ -156,6 +151,7 @@ class Boss:
         self.bullet_b.append(bullet)  # Ajoutez le laser à la liste
 
     def move(self):
+        print(self.speed)
         self.rect.move_ip(self.velocity[0]*self.speed, self.velocity[1]*self.speed )
 
     def draw(self):
@@ -175,7 +171,7 @@ class life:
 
 class score:
     def __init__(self):
-        self.score=0
+        self.score=14900
         self.font=pygame.font.Font(None, 34)
         
     
@@ -519,16 +515,11 @@ mixer.music.play(-1)
 
 
 async def main():    
-    appli=App(3) #Je définie mon application, avec une valeur de vitesse
+    appli=App(1) #Je définie mon application, avec une valeur de vitesse
 
     key_events = []  # Liste pour stocker les événements clavier
 
     etat = 0
-
-    bob_code=0
-
-    timel=0 
-    timerl=0
 
     while True:  # Boucle principale du jeu
         
@@ -550,60 +541,6 @@ async def main():
                 if k[K_RETURN]:
                     etat=1
                 
-                timerl=time.time()
-
-            if timerl-timel>=0.2: #Cette conditionelle empeche de tirer le missile trop vite
-                        
-                timel=timerl
-                k = key.get_pressed()
-                if k[K_UP]:
-                    if bob_code==0 or bob_code==1:
-                        bob_code+=1
-                        print(bob_code)
-                    else:
-                        bob_code=0
-                
-                if k[K_DOWN]:
-                    if bob_code==2 or bob_code==3:
-                        bob_code+=1
-                        print(bob_code)
-                    else:
-                        bob_code=0
-            
-                if k[K_LEFT]:
-                    if bob_code==4 or bob_code==6:
-                        bob_code+=1
-                        print(bob_code)
-                    else:
-                        bob_code=0
-                        
-                if k[K_RIGHT]:
-                    if bob_code==5 or bob_code==7:
-                        bob_code+=1
-                        print(bob_code)
-                    else:
-                        bob_code=0
-                        
-                if k[K_b]:
-                    if bob_code==8:
-                        bob_code+=1
-                        print(bob_code)
-                    else:
-                        bob_code=0
-                        
-                if k[K_a]:
-                    if bob_code==9:
-                        bob_code+=1
-                        print(bob_code)
-                    else:
-                        bob_code=0
-                        
-                
-
-            if bob_code==10:
-                print("Bob mode activé")
-                bob_code=11
-                appli.ship.respirte('spbl.png')
                 
             if etat==1:
                 # Mettez à jour et dessinez le jeu
